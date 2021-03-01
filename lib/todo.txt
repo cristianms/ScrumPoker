@@ -1,0 +1,32 @@
+
++---------------------------------------------+
+|            Pendências do projeto            |
++---------------------------------------------+
+
+- OK - Listar usuario da sala na votacao
+- OK - Quando todos usuarios votarem calcular o status da votacao
+
+- OK - Utilizar convite recebido
+  - OK - Adicionar entrada para se juntar a sala
+    - OK - Ao utilizar o convite o usuario deve ser adicionado a propriedades hashParticipantes da collection da sala
+    - OK - Ao entrar na votacao deve ser adicionado a collection de votacao
+
+- OK - Arrumar snackbars
+
+- OK - Sair da votacao
+  - OK - Ao sair da votacao remover o registro da collection de votacao a qual esta vinculado
+    - OK - Fazer isso quando
+      - OK - Clicar em sair <-
+      - .. - Encerrar o app --- Não e possivel
+
+- .. - Gerar numero para criacao de convite para a sala
+  - .. - 6 digitos
+
+- .. - Funcionalidade de exclusao de usuário da sala
+
+- .. - Funcionalidade de exclusao de sala
+
+- .. - Quando uma sala for removida, remover todos os registros de votacao ativos dela
+  - .. - Nesse momento quem estiver votando nela deve ser redirecionado para a Home, se possivel apresentar uma mensagem
+
+- .. - Ajustar snackbar
