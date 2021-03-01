@@ -1,8 +1,8 @@
-# scrumpoker
+# ScrumPoker
 
 O ScrumPoker é um aplicativo direcionado para times de desenvolvimento Scrum, tem o objetivo de facilitar votações das tasks.
 
-## Getting Started
+## Iniciando
 
 O projeto é desenvolvido em Flutter portanto é necessário ter o ambiente Flutter instalado para contribuir.
 
