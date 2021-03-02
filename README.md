@@ -6,6 +6,24 @@ O ScrumPoker é um aplicativo direcionado para times de desenvolvimento Scrum, t
 
 O projeto é desenvolvido em Flutter portanto é necessário ter o ambiente Flutter instalado para contribuir.
 
+<h4 align="center"> 
+	🚧  ScrumPoker 🚀 Em construção...  🚧
+</h4>
+
+### Features
+- [x] Cadastro de usuário
+- [x] Autenticação normal / Google
+- [x] Cadastro de sala da equipe
+- [x] Compartilhamento de convite para uma sala
+- [x] Exclusão de sala
+- [x] Votação em tempo real
+- [ ] Testes
+
+### 🛠 Tecnologias
+As seguintes ferramentas foram usadas na construção do projeto:
+- [Flutter](https://flutter.dev/)
+- [Firebase](https://firebase.google.com/?hl=pt-br)
+
 Alguns fontes para ajudar caso seja novo no Flutter:
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
