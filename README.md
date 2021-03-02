@@ -30,3 +30,6 @@ Alguns fontes para ajudar caso seja novo no Flutter:
 
 Documentação Flutter:
 [online documentation](https://flutter.dev/docs)
+
+### 🛠 Licença
+https://img.shields.io/github/license/cristianms/scrumpoker
