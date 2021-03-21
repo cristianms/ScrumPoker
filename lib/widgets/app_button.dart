@@ -10,10 +10,11 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-    // return ElevatedButton(
-      padding: EdgeInsets.all(10),
-      color: Colors.blue,
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.all(10),
+        shadowColor: Colors.blue,
+      ),
       child: showProgress
           ? Center(
               child: CircularProgressIndicator(

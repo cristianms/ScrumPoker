@@ -8,6 +8,7 @@ class Snack {
     //   scaffold..hideCurrentSnackBar();
     // }
     scaffold
+      // ignore: deprecated_member_use
       ..showSnackBar(
         SnackBar(
           // duration: const Duration(seconds: 4),
