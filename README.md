@@ -17,6 +17,7 @@ O projeto é desenvolvido em Flutter portanto é necessário ter o ambiente Flut
 - [x] Compartilhamento de convite para uma sala
 - [x] Exclusão de sala
 - [x] Votação em tempo real
+- [ ] Acesso para PO (espectador)
 - [ ] Testes
 
 ### 🛠 Tecnologias
