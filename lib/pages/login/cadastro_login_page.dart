@@ -134,7 +134,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             margin: EdgeInsets.only(top: 10),
             // child: RaisedButton(
             //   color: Colors.white,
-            child: ElevatedButton(
+            child: TextButton(
               child: Text(
                 "Cancelar",
                 style: TextStyle(
@@ -203,7 +203,9 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
   _tirarFoto() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
     setState(() {
-      this._image = File(pickedFile.path);
+      if (pickedFile != null) {
+        this._image = File(pickedFile.path);
+      }
     });
   }
 
