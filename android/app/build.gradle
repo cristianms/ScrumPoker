@@ -67,5 +67,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     // Adicionado manualmente >>>>>>>>>>>>>>
     implementation 'com.android.support:multidex:1.0.3'
+    // As dependências abaixo são recomendadas pelo firebase ao adicioná-lo no projeto, porém mantive comentado por hora
+    // implementation platform('com.google.firebase:firebase-bom:26.7.0')
+    // implementation 'com.google.firebase:firebase-analytics'
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 }
