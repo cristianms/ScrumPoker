@@ -43,3 +43,4 @@ app.*.map.json
 # Google services
 google-services.json
 services.tar
+anotacoes.txt
