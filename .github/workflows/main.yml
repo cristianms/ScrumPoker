@@ -20,7 +20,7 @@ jobs:
         with:
           channel: 'stable'
       - name: Dependencies
-      - run: flutter pub get
+        run: flutter pub get
 
       # Cria um diretório 'private' e decodifica o services.tar.gpg
       - name: Build
