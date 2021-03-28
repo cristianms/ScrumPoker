@@ -1,0 +1,2 @@
+Frase secreta utilizada para codifica o google_services com GPG:
+	Essa é a frase secreta
