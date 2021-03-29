@@ -26,8 +26,7 @@ jobs:
       - name: Build
         run: |
           mkdir $HOME/private
-          gpg --quiet --batch --yes --decrypt --passphrase="$FIREBASE_SECRET" \
-          --output $HOME/private/services.tar services.tar.gpg
+          gpg --quiet --batch --yes --decrypt --passphrase="$FIREBASE_SECRET" --output $HOME/private/services.tar services.tar.gpg
           tar xvf $HOME/private/services.tar
           flutter build appbundle
         env:
