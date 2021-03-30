@@ -25,9 +25,7 @@ jobs:
       # Cria um diretório 'private' e decodifica o services.tar.gpg
       - name: Build
         run: |
-          mkdir $HOME/private
-          gpg --quiet --batch --yes --decrypt --passphrase="$FIREBASE_SECRET" --output $HOME/private/services.tar services.tar.gpg
-          tar xvf $HOME/private/services.tar
+          echo $GOOGLE_SERVICES > ./android/app/google-services.json
           flutter build appbundle
         env:
-          FIREBASE_SECRET: ${{ secrets.FIREBASE_SECRET }}
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
