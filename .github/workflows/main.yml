@@ -26,7 +26,7 @@ jobs:
       - name: Build
         run: |
           echo $GOOGLE_SERVICES > ./android/app/google-services.json
-          flutter build appbundle
+          flutter build apk --release
         env:
           GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
 
