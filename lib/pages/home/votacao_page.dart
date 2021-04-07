@@ -45,6 +45,8 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Objeto Sala para a conversão de snashot
   Sala sala;
+  /// Objeto Sala para a conversão de snashot
+  Sala salaProvider;
 
   /// Usuario logado
   Usuario usuario;
@@ -62,6 +64,8 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     sala = Sala.fromMap(snapshotSala.data());
     // Obtém usuário logado
     usuario = Provider.of<AppModel>(context, listen: false).usuario;
+    // Obtém sala atual
+    salaProvider = Provider.of<AppModel>(context, listen: false).sala;
   }
 
   @override
@@ -102,10 +106,13 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Monta a AppBar
   _appBar(Sala salaStream) {
+    if (salaStream == null) {
+      return AppBar(
+        title: Text('Sala excluída'),
+      );
+    }
     return AppBar(
-      title: salaStream != null
-          ? Text('Votação - ${salaStream.descricao}')
-          : Text('Sala excluída'),
+      title: Text('Votação - ${salaStream.descricao}'),
       // Botões de actions no cabeçalho da tela
       actions: <Widget>[
         // Ação de compartilhar o identificador/código da sala
@@ -116,7 +123,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
               var dynamicLink = await criaDynamicLink(hash: snapshotSala.id);
               Share.share(
                 'Código de participação de sala Scrum:\n${snapshotSala.id}\n\nAplique este código no aplicativo ou clique no link $dynamicLink',
-                subject: 'Compartilhar código ScrumPoker',
+                subject: 'Código de sala - ScrumPoker',
               );
             },
             child: Icon(Icons.share, size: 26.0),

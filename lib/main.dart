@@ -26,7 +26,8 @@ class InicializadorFirebase extends StatelessWidget {
       builder: (BuildContext context, snapshot) {
         // Verifica se ocorreram erros ao inicializar o Firebase
         if (snapshot.hasError) {
-          return Text('Ocorreu algum erro com a iniciaização do Firebase:\n${snapshot.error.toString()}');
+          return Text(
+              'Ocorreu algum erro com a iniciaização do Firebase:\n${snapshot.error.toString()}');
         }
         // Se inicializou o Firebase com sucesso segue a vida...
         if (snapshot.connectionState == ConnectionState.done) {
@@ -52,6 +53,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => AppModel())],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Scrum Poker',
         theme: ThemeData(
           primarySwatch: Colors.blue,

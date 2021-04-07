@@ -43,23 +43,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     // Caso o aplicativo tenha sido inicializado através do DynamicLink, faz a manipulação
     manipulaDadosLink(link);
     // Caso o aplicativo já esteja aberto e receba um DynamicLink, faz a manipulação
-    print('............');
     FirebaseDynamicLinks.instance.onLink(onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      print('????????????');
       manipulaDadosLink(dynamicLink);
     });
   }
 
   /// Obtém os parâmetros do DynamicLink recebido
   void manipulaDadosLink(PendingDynamicLinkData data) {
-    print('manipulaDadosLink: ');
-    print(data.toString());
     final Uri uri = data?.link;
     if (uri != null) {
       final queryParams = uri.queryParameters;
       if (queryParams.length > 0) {
         String hashSala = queryParams["hash"];
-        print('hashSala: ' + hashSala);
         _validarCodigoConviteAutomatico(context, hashSala);
       }
     }

@@ -6,6 +6,7 @@ import 'package:scrumpoker/models/usuario.dart';
 class AppModel with ChangeNotifier {
   /// Instância de usuário logado
   Usuario _usuario;
+  /// Instância de sala
   Sala _sala;
 
   /// Obtém o usuário do Provider

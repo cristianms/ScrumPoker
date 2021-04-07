@@ -6,6 +6,7 @@ import 'package:scrumpoker/models/app_model.dart';
 import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/models/votacao.dart';
+import 'package:scrumpoker/pages/home/cadastro_sala_page.dart';
 import 'package:scrumpoker/pages/home/votacao_page.dart';
 import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
@@ -40,6 +41,13 @@ class _DashboardPageState extends State<DashboardPage> {
     Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
     return Column(
       children: [
+        Container(
+          width: double.infinity,
+          child: AppButton(
+            'Cadastrar sala',
+            onPressed: () => _onClickCadastrarNovaSala(context),
+          ),
+        ),
         Container(
           width: double.infinity,
           child: AppButton(
@@ -133,7 +141,8 @@ class _DashboardPageState extends State<DashboardPage> {
   /// Método responsável por redirecionar para a tela de votação
   ///
   /// Nesse ponto també é criado o vínculo entre sala e usuário
-  void _abreVotacaoSala(BuildContext context, Sala sala, DocumentSnapshot snapshotSalaSelecionada) {
+  void _abreVotacaoSala(BuildContext context, Sala sala,
+      DocumentSnapshot snapshotSalaSelecionada) {
     // Obtém hash da sala
     String hashSala = snapshotSalaSelecionada.id;
     // Seta sala atual no provider
@@ -203,5 +212,10 @@ class _DashboardPageState extends State<DashboardPage> {
     } else {
       Snack.show("Convite inválido!");
     }
+  }
+
+  /// Função para cadastro de nova sala
+  _onClickCadastrarNovaSala(BuildContext context) {
+    push(context, CadastroSalaPage());
   }
 }
