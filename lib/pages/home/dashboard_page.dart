@@ -74,7 +74,7 @@ class _DashboardPageState extends State<DashboardPage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return TextError("Não foi possível buscar as salas");
+          return TextError("Não foi possível buscar as salas\n${snapshot.error.toString()}");
         }
         if (!snapshot.hasData) {
           return TextError("Nenhuma sala encontrada até o momento");

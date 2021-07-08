@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+// import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -120,9 +120,13 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
           padding: EdgeInsets.only(right: 10.0),
           child: GestureDetector(
             onTap: () async {
-              var dynamicLink = await criaDynamicLink(hash: snapshotSala.id);
+              // var dynamicLink = await criaDynamicLink(hash: snapshotSala.id);
+              // Share.share(
+              //   'Código de participação de sala Scrum:\n${snapshotSala.id}\n\nAplique este código no aplicativo ou clique no link $dynamicLink',
+              //   subject: 'Código de sala - ScrumPoker',
+              // );
               Share.share(
-                'Código de participação de sala Scrum:\n${snapshotSala.id}\n\nAplique este código no aplicativo ou clique no link $dynamicLink',
+                'Código de participação de sala Scrum:\n${snapshotSala.id}\n\nAplique este código no aplicativo',
                 subject: 'Código de sala - ScrumPoker',
               );
             },
@@ -509,31 +513,31 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     return Icon(Icons.done);
   }
 
-  /// Gera o DynamicLink com o código de convite da sala
-  Future<Uri> criaDynamicLink({@required String hash}) async {
-    // Monta parâmetros para a criação da URL
-    final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://mlls.page.link/',
-      link: Uri.parse('https://mlls.page.link/?hash=$hash'),
-      androidParameters: AndroidParameters(
-        packageName: 'br.com.cristiandemellos.scrumpoker',
-        minimumVersion: 1,
-      ),
-      iosParameters: IosParameters(
-        bundleId: 'br.com.cristiandemellos.scrumpoker',
-        minimumVersion: '1',
-        appStoreId: '',
-      ),
-    );
-    final link = await parameters.buildUrl();
-    // Gera uma URL curta para
-    final ShortDynamicLink shortenedLink =
-        await DynamicLinkParameters.shortenUrl(
-      link,
-      DynamicLinkParametersOptions(
-        shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable,
-      ),
-    );
-    return shortenedLink.shortUrl;
-  }
+  // /// Gera o DynamicLink com o código de convite da sala
+  // Future<Uri> criaDynamicLink({@required String hash}) async {
+  //   // Monta parâmetros para a criação da URL
+  //   final DynamicLinkParameters parameters = DynamicLinkParameters(
+  //     uriPrefix: 'https://mlls.page.link/',
+  //     link: Uri.parse('https://mlls.page.link/?hash=$hash'),
+  //     androidParameters: AndroidParameters(
+  //       packageName: 'br.com.cristiandemellos.scrumpoker',
+  //       minimumVersion: 1,
+  //     ),
+  //     iosParameters: IosParameters(
+  //       bundleId: 'br.com.cristiandemellos.scrumpoker',
+  //       minimumVersion: '1',
+  //       appStoreId: '',
+  //     ),
+  //   );
+  //   final link = await parameters.buildUrl();
+  //   // Gera uma URL curta para
+  //   final ShortDynamicLink shortenedLink =
+  //       await DynamicLinkParameters.shortenUrl(
+  //     link,
+  //     DynamicLinkParametersOptions(
+  //       shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable,
+  //     ),
+  //   );
+  //   return shortenedLink.shortUrl;
+  // }
 }

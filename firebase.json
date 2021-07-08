@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "site": "web-scrum-poker",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
