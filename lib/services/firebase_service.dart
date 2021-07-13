@@ -159,6 +159,8 @@ class FirebaseService {
       if (file != null) {
         usuario.urlFoto = await FirebaseService.uploadFirebaseStorage(file);
       }
+      // Não armazenar senha do usuário no db, deixar isso para o FirebaseAuth
+      usuario.senha = null;
       // Insere um novo usuário na coleção de usuários
       FirebaseFirestore.instance
           .collection('usuarios')
