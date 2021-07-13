@@ -18,6 +18,7 @@ O projeto é desenvolvido em Flutter portanto é necessário ter o ambiente Flut
 - [x] Exclusão de sala
 - [x] Votação em tempo real
 - [ ] Acesso para PO (espectador)
+- [ ] Possibilitar que um participante da votação possa remover outro da sessão
 - [ ] Testes
 
 ### 🛠 Tecnologias
