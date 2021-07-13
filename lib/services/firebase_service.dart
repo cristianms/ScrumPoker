@@ -155,6 +155,8 @@ class FirebaseService {
       // FirebaseUser retornado
       final User firebaseUser = authResult.user;
       usuario.hash = firebaseUser.uid;
+      // Não armazenar senha do usuário no db, deixar isso para o FirebaseAuth
+      usuario.senha = null;
       // Caso o usuário tenha adicionado uma foto faz o upload e recebe o link
       if (file != null) {
         usuario.urlFoto = await FirebaseService.uploadFirebaseStorage(file);
