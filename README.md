@@ -35,7 +35,7 @@ Alguns fontes para ajudar caso seja novo no Flutter:
 Documentação Flutter:
 [online documentation](https://flutter.dev/docs)
 
-Eecução do projeto:
+#### Execução do projeto:
 Para executar o projeto é necessário fazer o processo de criação e vinculação do aplicativo com o Firebase. O Firebase disponibiliza a [documentação necessária](https://firebase.google.com/docs/flutter/setup?hl=pt&platform=Android) para esses passos.
 Caso tenha dúvidas não deixe de entrar em contato.
 
