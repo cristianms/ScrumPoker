@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/blocs/cadastro_sala_bloc.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/utils/nav.dart';
 import 'package:scrumpoker/utils/snack.dart';
@@ -32,7 +32,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
   /// Objeto Sala
   Sala sala = Sala();
   // Instância AppModel para provider
-  AppModel appModel;
+  ProviderApp appModel;
 
   @override
   void initState() {
@@ -52,7 +52,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
   @override
   Widget build(BuildContext context) {
     // Inicializa o provider de AppModel
-    appModel = Provider.of<AppModel>(context);
+    appModel = Provider.of<ProviderApp>(context);
 
     if (widget.snapshotSala != null) {
       _tDescricao.text = sala.descricao;

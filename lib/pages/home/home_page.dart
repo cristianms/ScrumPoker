@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/pages/home/cadastro_usuario_page.dart';
 import 'package:scrumpoker/pages/home/dashboard_page.dart';
@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   // void _validarCodigoConviteAutomatico(BuildContext context, String hashSala) {
   //   if (hashSala.length > 0) {
   //     // Obtém usuário logado
-  //     usuario = Provider.of<AppModel>(context, listen: false).usuario;
+  //     usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
   //     FirebaseService().utilizarConvite(context, hashSala, usuario.hash);
   //   } else {
   //     Snack.show(context, "Convite inválido!");
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-    Usuario usuario = Provider.of<AppModel>(context, listen: true).usuario;
+    Usuario usuario = Provider.of<ProviderApp>(context, listen: true).usuario;
 
     List arrayTitles = ['Home', 'Meus dados'];
     List arrayPages = [const DashboardPage(), const CadastroUsuarioPage()];
@@ -208,7 +208,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void _validarCodigoConvite(BuildContext context) async {
     var codigoConvite = _controllerCodConvite.text;
     if (codigoConvite.isNotEmpty) {
-      final usuarioLogado = Provider.of<AppModel>(context, listen: false).usuario;
+      final usuarioLogado = Provider.of<ProviderApp>(context, listen: false).usuario;
       await FirebaseService().utilizarConvite(context, codigoConvite, usuarioLogado.hash);
       if (mounted) {
         pop(context);

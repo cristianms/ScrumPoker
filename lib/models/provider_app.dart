@@ -4,7 +4,7 @@ import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/models/usuario.dart';
 
 /// Classe que representa um modelo de dados que poderá ser acessado em toda a aplicação através do Provider
-class AppModel with ChangeNotifier {
+class ProviderApp with ChangeNotifier {
   /// Instância de usuário logado
   Usuario _usuario;
   /// Instância de sala

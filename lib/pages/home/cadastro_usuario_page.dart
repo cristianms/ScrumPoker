@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/blocs/cadastro_bloc.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/pages/home/home_page.dart';
@@ -51,7 +51,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
 
   @override
   Widget build(BuildContext context) {
-    Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
+    Usuario usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
 
     // Preenche os campos do formulário
     _tNome.text = usuario.nome;

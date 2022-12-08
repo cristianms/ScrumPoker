@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/firebase_options.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/pages/splash_page.dart';
 import 'package:scrumpoker/utils/global_scaffold.dart';
 
@@ -35,7 +35,7 @@ class App extends StatelessWidget {
     ]);
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppModel()),
+        ChangeNotifierProvider(create: (_) => ProviderApp()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

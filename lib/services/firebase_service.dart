@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/models/votacao.dart';
@@ -19,7 +19,12 @@ import 'package:scrumpoker/utils/snack.dart';
 
 class FirebaseService {
   /// Inicializa Google SignIn
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      'https://www.googleapis.com/auth/contacts.readonly',
+    ],
+  );
 
   /// Inicializa FirebaseAuth
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -77,7 +82,7 @@ class FirebaseService {
       // Obtém pbbjeto usuário do banco de dados
       Usuario usuario = await getUsuarioCollectionByHash(authResult.user.uid);
       // Notifica ouvintes
-      Provider.of<AppModel>(context, listen: false).usuario = usuario;
+      Provider.of<ProviderApp>(context, listen: false).usuario = usuario;
       // Resposta genérica
       return ApiResponse.ok();
     } catch (error) {
@@ -115,7 +120,7 @@ class FirebaseService {
         FirebaseFirestore.instance.collection('usuarios').doc(usuario.hash).set(usuario.toMapWithoutPass());
       }
       // Notifica ouvintes
-      Provider.of<AppModel>(context, listen: false).usuario = usuario;
+      Provider.of<ProviderApp>(context, listen: false).usuario = usuario;
       // Resposta genérica
       return ApiResponse.ok();
     } catch (error) {
@@ -143,7 +148,7 @@ class FirebaseService {
       // Insere um novo usuário na coleção de usuários
       FirebaseFirestore.instance.collection('usuarios').doc(usuario.hash).set(usuario.toMapWithoutPass());
       // Notifica ouvintes
-      Provider.of<AppModel>(context, listen: false).usuario = usuario;
+      Provider.of<ProviderApp>(context, listen: false).usuario = usuario;
       // Resposta genérica
       return ApiResponse.ok(msg: "Usuário criado com sucesso");
     } on PlatformException catch (err) {
@@ -163,13 +168,13 @@ class FirebaseService {
       // Atualiza no Firebase
       await firebaseUser.updateDisplayName(usuarioCadastro.nome);
       // Atualiza usuário na collection/banco de dados
-      Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
+      Usuario usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
       usuario.nome = usuarioCadastro.nome;
       if (file != null) {
         usuario.urlFoto = await FirebaseService.uploadFirebaseStorage(file);
       }
       // Notifica ouvintes
-      Provider.of<AppModel>(context, listen: false).usuario = usuario;
+      Provider.of<ProviderApp>(context, listen: false).usuario = usuario;
       // Resposta genérica
       return ApiResponse.ok(msg: "Usuário criado com sucesso");
     } catch (error) {

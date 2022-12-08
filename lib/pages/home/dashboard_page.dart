@@ -2,7 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/models/votacao.dart';
@@ -27,13 +27,13 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     // Obtém usuário logado
-    usuario = Provider.of<AppModel>(context, listen: false).usuario;
+    usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
   }
 
   @override
   Widget build(BuildContext context) {
     // Obtém usuário logado
-    Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
+    Usuario usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
     return Column(
       children: [
         Expanded(
@@ -189,7 +189,7 @@ class CardSalaDashboard extends StatelessWidget {
     // Obtém hash da sala
     String hashSala = snapshotSalaSelecionada.id;
     // Seta sala atual no provider
-    Provider.of<AppModel>(context, listen: false).sala = sala;
+    Provider.of<ProviderApp>(context, listen: false).sala = sala;
     // Cria objeto Votacao
     Votacao votacao = Votacao(
       hashSala: hashSala,

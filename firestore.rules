@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	// Para escrita nos documentos de usuários é permitido apenas alteração no próprio
+    // usuário logado
+  	match /usuarios/{uid} {
+    	allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+		// Para fazer leitura dos dados dos usuários é necessário estar autenticado
+		match /usuarios/{uid} {
+    	allow read: if request.auth != null;
+    }
+
+		// Para leitura e escrita na coleção de salas é necessário estar autenticado
+		match /salas/{document=**} {
+      allow read, write: if request.auth.uid != null;
+    }
+
+		// Para leitura e escrita na coleção de votação é necessário estar autenticado
+		match /votacoes/{document=**} {
+      allow read, write: if request.auth.uid != null;
+    }
+    
+		// Para leitura e escrita na coleção de salas é necessário estar autenticado
+    // Remover após atualizar o banco de dados para utilizar a collection 'salas'
+		match /sala/{document=**} {
+      allow read, write: if request.auth.uid != null;
+    }
+
+  }
+}

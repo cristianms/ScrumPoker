@@ -2,7 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/pages/home/home_page.dart';
 import 'package:scrumpoker/pages/login/login_page.dart';
@@ -45,7 +45,7 @@ class _SplashPageState extends State<SplashPage> {
   /// Verifica se usuário existe para direcionar para a pagina correta
   verificaUsuario(Usuario usuario) {
     if (usuario != null) {
-      Provider.of<AppModel>(context, listen: false).usuario = usuario;
+      Provider.of<ProviderApp>(context, listen: false).usuario = usuario;
       push(context, const HomePage(), replace: true);
     } else {
       push(context, const LoginPage(), replace: true);

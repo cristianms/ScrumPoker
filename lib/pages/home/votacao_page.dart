@@ -2,7 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/models/votacao.dart';
@@ -57,9 +57,9 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     // Converte map de dados do snapshot para objeto Sala
     sala = Sala.fromMap(widget.snapshotSala.data());
     // Obtém usuário logado
-    usuario = Provider.of<AppModel>(context, listen: false).usuario;
+    usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
     // Obtém sala atual
-    salaProvider = Provider.of<AppModel>(context, listen: false).sala;
+    salaProvider = Provider.of<ProviderApp>(context, listen: false).sala;
   }
 
   @override
@@ -193,7 +193,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
         children: [
           // Grid de notas
           Expanded(
-            flex: 2,
+            flex: 1,
             child: Card(
               child: Column(
                 children: [
@@ -246,7 +246,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
           // Status da votação
           Expanded(
-            flex: 2,
+            flex: 1,
             child: Card(
               child: Column(
                 children: [
@@ -366,50 +366,80 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
           );
         }
         Usuario usuario = Usuario.fromMap(snapshot.data.data());
-        return SizedBox(
-          height: 10,
-          child: Column(
-            children: [
-              Text(
-                _cortarNome(usuario.nome),
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-              Expanded(
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    Container(
-                      child: usuario.urlFoto != null
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(usuario.urlFoto),
-                              backgroundColor: Colors.transparent,
-                            )
-                          : Image.asset("assets/imagens/usuario.png"),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 0.1,
+        return GestureDetector(
+          onLongPress: () => _dialogRemoverParticipante(context, usuario),
+          child: SizedBox(
+            height: 10,
+            child: Column(
+              children: [
+                Text(
+                  _cortarNome(usuario.nome),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                Expanded(
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: <Widget>[
+                      Container(
+                        child: usuario.urlFoto != null
+                            ? CircleAvatar(
+                                backgroundImage: NetworkImage(usuario.urlFoto),
+                                backgroundColor: Colors.transparent,
+                              )
+                            : Image.asset("assets/imagens/usuario.png"),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 0.1,
+                            ),
+                            color: votacao.nota != null ? Colors.lightGreen : Colors.redAccent,
                           ),
-                          color: votacao.nota != null ? Colors.lightGreen : Colors.redAccent,
-                        ),
-                        child: Center(
-                          child: _nota(votacao, salaStream),
+                          child: Center(
+                            child: _nota(votacao, salaStream),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+        );
+      },
+    );
+  }
+
+  void _dialogRemoverParticipante(BuildContext context, Usuario usuario) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Remover ${usuario.nome}'),
+          content: const SingleChildScrollView(
+            child: Text('Tem certeza que deseja removê-lo?'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Removê-lo'),
+              onPressed: () => FirebaseService().excluirVotacao(widget.snapshotSala.id, usuario.hash),
+            ),
+          ],
         );
       },
     );
@@ -434,41 +464,46 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Montagem do grid de notas para votação
   Widget _gridNotas() {
-    return GridView.count(
-      primary: false,
-      padding: const EdgeInsets.all(8.0),
-      crossAxisSpacing: 3,
-      mainAxisSpacing: 3,
-      crossAxisCount: 6,
-      children: [
-        _circularButton(0),
-        _circularButton(1),
-        _circularButton(2),
-        _circularButton(3),
-        _circularButton(5),
-        _circularButton(8),
-        _circularButton(13),
-        _circularButton(21),
-        _circularButton(34),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          _circularButton(0),
+          _circularButton(1),
+          _circularButton(2),
+          _circularButton(3),
+          _circularButton(5),
+          _circularButton(8),
+          _circularButton(13),
+          _circularButton(21),
+          _circularButton(34),
+        ],
+      ),
     );
   }
 
   /// Montagem do componente de nota
   Widget _circularButton(int nota) {
-    return RawMaterialButton(
-      constraints: const BoxConstraints(),
-      elevation: 5.0,
-      fillColor: Colors.blue[300],
-      padding: const EdgeInsets.all(5.0),
-      shape: const CircleBorder(),
-      onPressed: () => FirebaseService().votar(context, widget.snapshotSala.id, usuario.hash, nota),
-      child: Text(
-        nota.toString(),
-        style: const TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
+    return SizedBox(
+      height: 70,
+      width: 70,
+      child: GestureDetector(
+        onTap: () => FirebaseService().votar(context, widget.snapshotSala.id, usuario.hash, nota),
+        child: Card(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          elevation: 10,
+          child: Center(
+            child: Text(
+              nota.toString(),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 25,
+                color: Colors.black54,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
       ),
     );
