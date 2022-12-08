@@ -44,7 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
         Container(
           width: double.infinity,
           child: AppButton(
-            'Cadastrar sala',
+            'Cadastrar nova sala',
             onPressed: () => _onClickCadastrarNovaSala(context),
           ),
         ),
@@ -67,25 +67,30 @@ class _DashboardPageState extends State<DashboardPage> {
     // Monta lista de acordo com o stream da coleção de salas
     return StreamBuilder<QuerySnapshot>(
       // Busca todas as salas por enquanto, depois vejo como melhorar
-      stream: FirebaseService()
-          .salasStream
-          // .where('hashCriador', isEqualTo: usuario.hash)
-          .orderBy('descricao')
-          .snapshots(),
+      stream: FirebaseService().salasStream.where('hashCriador', isEqualTo: usuario.hash).orderBy('descricao').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return TextError("Não foi possível buscar as salas");
         }
         if (!snapshot.hasData) {
-          return TextError("Nenhuma sala encontrada até o momento");
+          return Center(
+            child: Text("Nenhuma sala encontrada até o momento"),
+          );
         }
-        List<DocumentSnapshot> documentsSalas = snapshot.data.docs;
 
-        documentsSalas = documentsSalas
-            .where((sala) => Sala.fromMap(sala.data())
-                .hashsParticipantes
-                .contains(usuario.hash))
-            .toList();
+        final documentsSalas = snapshot.data.docs;
+
+        final documentsSalasVinculadasUsuario = documentsSalas.where((sala) => Sala.fromMap(sala.data()).hashsParticipantes.contains(usuario.hash)).toList();
+        if (documentsSalasVinculadasUsuario.isEmpty) {
+          return Center(
+            child: Text(
+              "Você ainda não tem vínculo com nenhum sala.\nCrie uma sala e covide seus colegas do time através do código da sala ou aplique o código de convite recebido.",
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+          );
+        }
 
         return Row(
           children: [
@@ -93,40 +98,13 @@ class _DashboardPageState extends State<DashboardPage> {
               child: SizedBox(
                 height: double.infinity,
                 child: ListView.builder(
-                  itemCount: documentsSalas != null ? documentsSalas.length : 0,
+                  itemCount: documentsSalasVinculadasUsuario != null ? documentsSalasVinculadasUsuario.length : 0,
                   itemBuilder: (context, index) {
-                    Sala sala = Sala.fromMap(documentsSalas[index].data());
-                    return GestureDetector(
-                      onTap: () => _abreVotacaoSala(
-                        context,
-                        sala,
-                        documentsSalas[index],
-                      ),
-                      child: Card(
-                        child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                sala.descricao != null
-                                    ? sala.descricao
-                                    : "Sem título",
-                                style: TextStyle(
-                                  fontSize: 25,
-                                ),
-                              ),
-                              Text(
-                                "\n${sala.hashsParticipantes.length} participante(s)",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    Sala sala = Sala.fromMap(documentsSalasVinculadasUsuario[index].data());
+                    return CardSalaDashboard(
+                      sala: sala,
+                      usuario: usuario,
+                      snapSala: documentsSalasVinculadasUsuario[index],
                     );
                   },
                 ),
@@ -135,32 +113,6 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         );
       },
-    );
-  }
-
-  /// Método responsável por redirecionar para a tela de votação
-  ///
-  /// Nesse ponto també é criado o vínculo entre sala e usuário
-  void _abreVotacaoSala(BuildContext context, Sala sala,
-      DocumentSnapshot snapshotSalaSelecionada) {
-    // Obtém hash da sala
-    String hashSala = snapshotSalaSelecionada.id;
-    // Seta sala atual no provider
-    Provider.of<AppModel>(context, listen: false).sala = sala;
-    // Cria objeto Votacao
-    Votacao votacao = Votacao(
-      hashSala: hashSala,
-      hashUsuario: usuario.hash,
-    );
-    // Vincula usuário a sala através da collection de votações
-    FirebaseService()
-        .votacoesStream
-        .doc('${hashSala}_${usuario.hash}')
-        .set(votacao.toMap());
-    // Chama a tela de votação
-    push(
-      context,
-      VotacaoPage(snapshotSala: snapshotSalaSelecionada),
     );
   }
 
@@ -217,5 +169,74 @@ class _DashboardPageState extends State<DashboardPage> {
   /// Função para cadastro de nova sala
   _onClickCadastrarNovaSala(BuildContext context) {
     push(context, CadastroSalaPage());
+  }
+}
+
+class CardSalaDashboard extends StatelessWidget {
+  const CardSalaDashboard({
+    Key key,
+    @required this.sala,
+    @required this.usuario,
+    @required this.snapSala,
+  }) : super(key: key);
+
+  final Sala sala;
+  final Usuario usuario;
+  final DocumentSnapshot<Object> snapSala;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _abreVotacaoSala(
+        context,
+        sala,
+        snapSala,
+      ),
+      child: Card(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                sala.descricao != null ? sala.descricao : "Sem título",
+                style: TextStyle(
+                  fontSize: 25,
+                ),
+              ),
+              Text(
+                "\n${sala.hashsParticipantes.length} participante(s)",
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Método responsável por redirecionar para a tela de votação
+  ///
+  /// Nesse ponto també é criado o vínculo entre sala e usuário
+  void _abreVotacaoSala(BuildContext context, Sala sala, DocumentSnapshot snapshotSalaSelecionada) {
+    // Obtém hash da sala
+    String hashSala = snapshotSalaSelecionada.id;
+    // Seta sala atual no provider
+    Provider.of<AppModel>(context, listen: false).sala = sala;
+    // Cria objeto Votacao
+    Votacao votacao = Votacao(
+      hashSala: hashSala,
+      hashUsuario: usuario.hash,
+    );
+    // Vincula usuário a sala através da collection de votações
+    FirebaseService().votacoesStream.doc('${hashSala}_${usuario.hash}').set(votacao.toMap());
+    // Chama a tela de votação
+    push(
+      context,
+      VotacaoPage(snapshotSala: snapshotSalaSelecionada),
+    );
   }
 }

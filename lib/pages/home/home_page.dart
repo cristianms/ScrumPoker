@@ -9,7 +9,6 @@ import 'package:scrumpoker/pages/home/dashboard_page.dart';
 import 'package:scrumpoker/pages/login/login_page.dart';
 import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
-
 import 'cadastro_sala_page.dart';
 
 class HomePage extends StatefulWidget {
