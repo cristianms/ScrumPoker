@@ -1,8 +1,8 @@
 // @dart=2.9
 import 'dart:async';
 
+import 'package:auth_buttons/auth_buttons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:scrumpoker/blocs/login_bloc.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/pages/login/cadastro_login_page.dart';
@@ -128,10 +128,8 @@ class _LoginPageState extends State<LoginPage> {
               initialData: false,
               builder: (context, snapshot) {
                 if (snapshot.data == false) {
-                  return GoogleSignInButton(
+                  return GoogleAuthButton(
                     onPressed: () => _onClickLoginGoogle(context),
-                    darkMode: brightness == Brightness.dark ? true : false,
-                    text: "Entrar com Google",
                   );
                 }
                 return Center(child: CircularProgressIndicator());

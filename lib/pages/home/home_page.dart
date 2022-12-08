@@ -1,6 +1,5 @@
 // @dart=2.9
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/models/app_model.dart';
@@ -10,7 +9,6 @@ import 'package:scrumpoker/pages/home/dashboard_page.dart';
 import 'package:scrumpoker/pages/login/login_page.dart';
 import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
-import 'package:scrumpoker/utils/snack.dart';
 
 import 'cadastro_sala_page.dart';
 
@@ -33,43 +31,43 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       selectedIndex = 0;
     });
     // Trata DynamicLinks
-    fetchLinkData();
+    //fetchLinkData();
   }
 
-  /// Obtém dados do DynamicLink, caso o app tenha sido aberto a partir de um link
-  void fetchLinkData() async {
-    // Faz uma chamada para o link real do Firebase, pois ele chegou aqui encurtado por nós mesmos
-    var link = await FirebaseDynamicLinks.instance.getInitialLink();
-    // Caso o aplicativo tenha sido inicializado através do DynamicLink, faz a manipulação
-    manipulaDadosLink(link);
-    // Caso o aplicativo já esteja aberto e receba um DynamicLink, faz a manipulação
-    FirebaseDynamicLinks.instance.onLink(onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      manipulaDadosLink(dynamicLink);
-    });
-  }
+  // /// Obtém dados do DynamicLink, caso o app tenha sido aberto a partir de um link
+  // void fetchLinkData() async {
+  //   // Faz uma chamada para o link real do Firebase, pois ele chegou aqui encurtado por nós mesmos
+  //   var link = await FirebaseDynamicLinks.instance.getInitialLink();
+  //   // Caso o aplicativo tenha sido inicializado através do DynamicLink, faz a manipulação
+  //   manipulaDadosLink(link);
+  //   // Caso o aplicativo já esteja aberto e receba um DynamicLink, faz a manipulação
+  //   FirebaseDynamicLinks.instance.onLink(onSuccess: (PendingDynamicLinkData dynamicLink) async {
+  //     manipulaDadosLink(dynamicLink);
+  //   });
+  // }
 
-  /// Obtém os parâmetros do DynamicLink recebido
-  void manipulaDadosLink(PendingDynamicLinkData data) {
-    final Uri uri = data?.link;
-    if (uri != null) {
-      final queryParams = uri.queryParameters;
-      if (queryParams.length > 0) {
-        String hashSala = queryParams["hash"];
-        _validarCodigoConviteAutomatico(context, hashSala);
-      }
-    }
-  }
+  // /// Obtém os parâmetros do DynamicLink recebido
+  // void manipulaDadosLink(PendingDynamicLinkData data) {
+  //   final Uri uri = data?.link;
+  //   if (uri != null) {
+  //     final queryParams = uri.queryParameters;
+  //     if (queryParams.length > 0) {
+  //       String hashSala = queryParams["hash"];
+  //       _validarCodigoConviteAutomatico(context, hashSala);
+  //     }
+  //   }
+  // }
 
-  /// Valida o código de convite
-  void _validarCodigoConviteAutomatico(BuildContext context, String hashSala) {
-    if (hashSala.length > 0) {
-      // Obtém usuário logado
-      usuario = Provider.of<AppModel>(context, listen: false).usuario;
-      FirebaseService().utilizarConvite(context, hashSala, usuario.hash);
-    } else {
-      Snack.show(context, "Convite inválido!");
-    }
-  }
+  // /// Valida o código de convite
+  // void _validarCodigoConviteAutomatico(BuildContext context, String hashSala) {
+  //   if (hashSala.length > 0) {
+  //     // Obtém usuário logado
+  //     usuario = Provider.of<AppModel>(context, listen: false).usuario;
+  //     FirebaseService().utilizarConvite(context, hashSala, usuario.hash);
+  //   } else {
+  //     Snack.show(context, "Convite inválido!");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,5 @@
 // @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/models/app_model.dart';
@@ -13,7 +12,6 @@ import 'package:scrumpoker/utils/nav.dart';
 import 'package:scrumpoker/utils/snack.dart';
 import 'package:scrumpoker/widgets/app_button.dart';
 import 'package:scrumpoker/widgets/text_error.dart';
-import 'package:share/share.dart';
 
 /// Widget que representa a tela de votação
 ///
@@ -115,20 +113,20 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       title: Text('Votação - ${salaStream.descricao}'),
       // Botões de actions no cabeçalho da tela
       actions: <Widget>[
-        // Ação de compartilhar o identificador/código da sala
-        Padding(
-          padding: EdgeInsets.only(right: 10.0),
-          child: GestureDetector(
-            onTap: () async {
-              var dynamicLink = await criaDynamicLink(hash: snapshotSala.id);
-              Share.share(
-                'Código de participação de sala Scrum:\n${snapshotSala.id}\n\nAplique este código no aplicativo ou clique no link $dynamicLink',
-                subject: 'Código de sala - ScrumPoker',
-              );
-            },
-            child: Icon(Icons.share, size: 26.0),
-          ),
-        ),
+        // // Ação de compartilhar o identificador/código da sala
+        // Padding(
+        //   padding: EdgeInsets.only(right: 10.0),
+        //   child: GestureDetector(
+        //     onTap: () async {
+        //       var dynamicLink = await criaDynamicLink(hash: snapshotSala.id);
+        //       Share.share(
+        //         'Código de participação de sala Scrum:\n${snapshotSala.id}\n\nAplique este código no aplicativo ou clique no link $dynamicLink',
+        //         subject: 'Código de sala - ScrumPoker',
+        //       );
+        //     },
+        //     child: Icon(Icons.share, size: 26.0),
+        //   ),
+        // ),
         // Ações diversas
         PopupMenuButton<String>(
           onSelected: _onSelect,
@@ -509,31 +507,31 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     return Icon(Icons.done);
   }
 
-  /// Gera o DynamicLink com o código de convite da sala
-  Future<Uri> criaDynamicLink({@required String hash}) async {
-    // Monta parâmetros para a criação da URL
-    final DynamicLinkParameters parameters = DynamicLinkParameters(
-      uriPrefix: 'https://mlls.page.link/',
-      link: Uri.parse('https://mlls.page.link/?hash=$hash'),
-      androidParameters: AndroidParameters(
-        packageName: 'br.com.cristiandemellos.scrumpoker',
-        minimumVersion: 1,
-      ),
-      iosParameters: IosParameters(
-        bundleId: 'br.com.cristiandemellos.scrumpoker',
-        minimumVersion: '1',
-        appStoreId: '',
-      ),
-    );
-    final link = await parameters.buildUrl();
-    // Gera uma URL curta para
-    final ShortDynamicLink shortenedLink =
-        await DynamicLinkParameters.shortenUrl(
-      link,
-      DynamicLinkParametersOptions(
-        shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable,
-      ),
-    );
-    return shortenedLink.shortUrl;
-  }
+  // /// Gera o DynamicLink com o código de convite da sala
+  // Future<Uri> criaDynamicLink({@required String hash}) async {
+  //   // Monta parâmetros para a criação da URL
+  //   final DynamicLinkParameters parameters = DynamicLinkParameters(
+  //     uriPrefix: 'https://mlls.page.link/',
+  //     link: Uri.parse('https://mlls.page.link/?hash=$hash'),
+  //     androidParameters: AndroidParameters(
+  //       packageName: 'br.com.cristiandemellos.scrumpoker',
+  //       minimumVersion: 1,
+  //     ),
+  //     iosParameters: IosParameters(
+  //       bundleId: 'br.com.cristiandemellos.scrumpoker',
+  //       minimumVersion: '1',
+  //       appStoreId: '',
+  //     ),
+  //   );
+  //   final link = await parameters.buildUrl();
+  //   // Gera uma URL curta para
+  //   final ShortDynamicLink shortenedLink =
+  //       await DynamicLinkParameters.shortenUrl(
+  //     link,
+  //     DynamicLinkParametersOptions(
+  //       shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable,
+  //     ),
+  //   );
+  //   return shortenedLink.shortUrl;
+  // }
 }

@@ -25,16 +25,13 @@ class FirebaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   /// Obtém as salas
-  CollectionReference get salasStream =>
-      FirebaseFirestore.instance.collection('salas');
+  CollectionReference get salasStream => FirebaseFirestore.instance.collection('salas');
 
   /// Obtém as salas
-  CollectionReference get votacoesStream =>
-      FirebaseFirestore.instance.collection('votacoes');
+  CollectionReference get votacoesStream => FirebaseFirestore.instance.collection('votacoes');
 
   /// Obtém os usuários
-  CollectionReference get usuariosStream =>
-      FirebaseFirestore.instance.collection('usuarios');
+  CollectionReference get usuariosStream => FirebaseFirestore.instance.collection('usuarios');
 
   /// Obtém o usuário da collection/banco de dados através do uid
   Future<Usuario> getUsuarioCollectionByHash(uid) async {
@@ -47,8 +44,7 @@ class FirebaseService {
   /// Obtém a sala da collection/banco de dados através do hash
   Future<Sala> getSalaCollectionByHash(String hashSala) async {
     // Obtém o snapshot da sala encontrada relacionada ao hash recebido
-    DocumentSnapshot snapshot =
-        await salasStream.doc(hashSala).snapshots().first;
+    DocumentSnapshot snapshot = await salasStream.doc(hashSala).snapshots().first;
     // Converte snapshot recebida para tipo sala
     return Sala.fromMap(snapshot.data());
   }
@@ -56,28 +52,20 @@ class FirebaseService {
   /// Obtém a sala da collection/banco de dados através do hash
   Future<Votacao> getVotacaoCollectionByHash(String hashVotacao) async {
     // Obtém o snapshot da Votacao encontrada relacionada ao hash recebido
-    DocumentSnapshot snapshot =
-        await votacoesStream.doc(hashVotacao).snapshots().first;
+    DocumentSnapshot snapshot = await votacoesStream.doc(hashVotacao).snapshots().first;
     // Converte snapshot recebida para tipo Votacao
     return Votacao.fromMap(snapshot.data());
   }
 
   /// Obtém as salas da collection/banco de dados através do hash
   Future<List<Votacao>> getVotacaoCollectionByHashPart(String hashSala) async {
-    QuerySnapshot qn = await votacoesStream
-        .where('hashSala', isEqualTo: hashSala)
-        .snapshots()
-        .first;
+    QuerySnapshot qn = await votacoesStream.where('hashSala', isEqualTo: hashSala).snapshots().first;
     return qn.docs.map((item) => Votacao.fromMap(item.data())).toList();
   }
 
   /// Obtém as salas da collection/banco de dados através do hash
-  Future<List<DocumentSnapshot>> getVotacaoDocumentsByHashPart(
-      String hashSala) async {
-    QuerySnapshot qn = await votacoesStream
-        .where('hashSala', isEqualTo: hashSala)
-        .snapshots()
-        .first;
+  Future<List<DocumentSnapshot>> getVotacaoDocumentsByHashPart(String hashSala) async {
+    QuerySnapshot qn = await votacoesStream.where('hashSala', isEqualTo: hashSala).snapshots().first;
     return qn.docs.toList();
   }
 
@@ -85,8 +73,7 @@ class FirebaseService {
   Future<ApiResponse> login(BuildContext context, Usuario usuarioLogin) async {
     try {
       // Login no Firebase com login e senha
-      UserCredential authResult = await _auth.signInWithEmailAndPassword(
-          email: usuarioLogin.email, password: usuarioLogin.senha);
+      UserCredential authResult = await _auth.signInWithEmailAndPassword(email: usuarioLogin.email, password: usuarioLogin.senha);
       // Obtém pbbjeto usuário do banco de dados
       Usuario usuario = await getUsuarioCollectionByHash(authResult.user.uid);
       // Notifica ouvintes
@@ -103,19 +90,16 @@ class FirebaseService {
   Future<ApiResponse> loginGoogle(BuildContext context) async {
     try {
       // Login com o Google - Abre janela para login no Google
-      final GoogleSignInAccount googleSignInAccount =
-          await _googleSignIn.signIn();
+      final GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
       // Tendo o googleSignInAccount completamos a autenticação
-      final GoogleSignInAuthentication googleAuth =
-          await googleSignInAccount.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleSignInAccount.authentication;
       // Credenciais para o Firebase
       final AuthCredential authCredential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
       // Login no Firebase
-      UserCredential authResult =
-          await _auth.signInWithCredential(authCredential);
+      UserCredential authResult = await _auth.signInWithCredential(authCredential);
       // Obtém objeto usuário do banco de dados
       Usuario usuario = await getUsuarioCollectionByHash(authResult.user.uid);
       // Se o usuário ainda não tiver registro na base, insere
@@ -129,10 +113,7 @@ class FirebaseService {
         usuario.email = firebaseUser.email;
         usuario.urlFoto = firebaseUser.photoURL;
         // Insere um novo usuário na coleção de usuários
-        FirebaseFirestore.instance
-            .collection('usuarios')
-            .doc(usuario.hash)
-            .set(usuario.toMap());
+        FirebaseFirestore.instance.collection('usuarios').doc(usuario.hash).set(usuario.toMapWithoutPass());
       }
       // Notifica ouvintes
       Provider.of<AppModel>(context, listen: false).usuario = usuario;
@@ -145,8 +126,7 @@ class FirebaseService {
   }
 
   /// Método responsável por inserir um novo usuário
-  Future<ApiResponse> inserir(BuildContext context, Usuario usuario,
-      {File file}) async {
+  Future<ApiResponse> inserir(BuildContext context, Usuario usuario, {File file}) async {
     try {
       // Realiza o cadastro de um novo usuário no banco de dados
       UserCredential authResult = await _auth.createUserWithEmailAndPassword(
@@ -163,18 +143,14 @@ class FirebaseService {
         usuario.urlFoto = await FirebaseService.uploadFirebaseStorage(file);
       }
       // Insere um novo usuário na coleção de usuários
-      FirebaseFirestore.instance
-          .collection('usuarios')
-          .doc(usuario.hash)
-          .set(usuario.toMap());
+      FirebaseFirestore.instance.collection('usuarios').doc(usuario.hash).set(usuario.toMapWithoutPass());
       // Notifica ouvintes
       Provider.of<AppModel>(context, listen: false).usuario = usuario;
       // Resposta genérica
       return ApiResponse.ok(msg: "Usuário criado com sucesso");
     } on PlatformException catch (err) {
       // Exception lançada pelo Firebase
-      final mensagem =
-          err.message ?? 'Ocorreu um erro verifique suas credenciais';
+      final mensagem = err.message ?? 'Ocorreu um erro verifique suas credenciais';
       return ApiResponse.error(msg: "Erro ao criar um usuário.\n\n$mensagem");
     } catch (error) {
       // Exception genérica
@@ -182,14 +158,12 @@ class FirebaseService {
     }
   }
 
-  Future<ApiResponse> cadastrar(BuildContext context, Usuario usuarioCadastro,
-      {File file}) async {
+  Future<ApiResponse> cadastrar(BuildContext context, Usuario usuarioCadastro, {File file}) async {
     try {
       // Atualiza usuário registrado no FirebaseAuth
       User firebaseUser = FirebaseAuth.instance.currentUser;
       // Atualiza no Firebase
-      await firebaseUser.updateProfile(displayName: usuarioCadastro.nome);
-
+      await firebaseUser.updateDisplayName(usuarioCadastro.nome);
       // Atualiza usuário na collection/banco de dados
       Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
       usuario.nome = usuarioCadastro.nome;
@@ -204,8 +178,7 @@ class FirebaseService {
       print(error);
       if (error is PlatformException) {
         print("Error Code ${error.code}");
-        return ApiResponse.error(
-            msg: "Erro ao criar um usuário.\n\n${error.message}");
+        return ApiResponse.error(msg: "Erro ao criar um usuário.\n\n${error.message}");
       }
       return ApiResponse.error(msg: "Não foi possível criar um usuário.");
     }
@@ -246,8 +219,7 @@ class FirebaseService {
       print(error);
       if (error is PlatformException) {
         print("Error Code ${error.code}");
-        return ApiResponse.error(
-            msg: "Erro ao alterar a sala.\n\n${error.message}");
+        return ApiResponse.error(msg: "Erro ao alterar a sala.\n\n${error.message}");
       }
       return ApiResponse.error(msg: "Não foi possível alterar a sala.");
     }
@@ -256,8 +228,7 @@ class FirebaseService {
   /// Método responsável por excluir a sala
   deletar(BuildContext context, String hash) async {
     try {
-      QuerySnapshot snapshotVotacoes =
-          await votacoesStream.where('hashSala', isEqualTo: hash).get();
+      QuerySnapshot snapshotVotacoes = await votacoesStream.where('hashSala', isEqualTo: hash).get();
       for (DocumentSnapshot ds in snapshotVotacoes.docs) {
         ds.reference.delete();
       }
@@ -268,8 +239,7 @@ class FirebaseService {
     } catch (error) {
       if (error is PlatformException) {
         print("Error Code ${error.code}");
-        return ApiResponse.error(
-            msg: "Erro ao excluir a sala.\n\n${error.message}");
+        return ApiResponse.error(msg: "Erro ao excluir a sala.\n\n${error.message}");
       }
       return ApiResponse.error(msg: "Não foi possível excluir a sala.");
     }
@@ -285,16 +255,14 @@ class FirebaseService {
     } catch (error) {
       if (error is PlatformException) {
         print("Error Code ${error.code}");
-        return ApiResponse.error(
-            msg: "Erro ao excluir a sala.\n\n${error.message}");
+        return ApiResponse.error(msg: "Erro ao excluir a sala.\n\n${error.message}");
       }
       return ApiResponse.error(msg: "Não foi possível excluir a sala.");
     }
   }
 
   /// Método responsável por fazer a utilização de um convite
-  utilizarConvite(
-      BuildContext context, String hashSala, String hashUsuario) async {
+  utilizarConvite(BuildContext context, String hashSala, String hashUsuario) async {
     assert(context != null);
     assert(hashSala != null);
     assert(hashUsuario != null);
@@ -344,8 +312,7 @@ class FirebaseService {
   }
 
   /// Método responsável por registrar a votação
-  votar(BuildContext context, String hashSala, String hashUsuario,
-      int nota) async {
+  votar(BuildContext context, String hashSala, String hashUsuario, int nota) async {
     var hashVotacao = '${hashSala}_$hashUsuario';
     // Obtém votação
     Votacao votacao = await getVotacaoCollectionByHash(hashVotacao);
@@ -361,10 +328,8 @@ class FirebaseService {
   contabilizaVotacoes(String hashSala) async {
     // Obtém a referencia da sala
     Sala sala = await getSalaCollectionByHash(hashSala);
-    List<Votacao> listaVotacoesSala =
-        await getVotacaoCollectionByHashPart(hashSala);
-    int qtdVotacoesConcluidas =
-        listaVotacoesSala.where((element) => element.nota != null).length;
+    List<Votacao> listaVotacoesSala = await getVotacaoCollectionByHashPart(hashSala);
+    int qtdVotacoesConcluidas = listaVotacoesSala.where((element) => element.nota != null).length;
 
     if (sala.hashsParticipantes.length > qtdVotacoesConcluidas) {
       // print(' > Votacoes pendentes');
@@ -387,8 +352,7 @@ class FirebaseService {
   /// Encerra votação e exibe notas
   resetarVotacoes(String hashSala) async {
     await toggleVotacaoEncerrada(hashSala, false);
-    List<DocumentSnapshot> listaVotacoesSala =
-        await getVotacaoDocumentsByHashPart(hashSala);
+    List<DocumentSnapshot> listaVotacoesSala = await getVotacaoDocumentsByHashPart(hashSala);
     listaVotacoesSala.forEach((document) async {
       var votacao = Votacao.fromMap(document.data());
       votacao.nota = null;

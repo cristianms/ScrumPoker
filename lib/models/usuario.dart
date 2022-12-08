@@ -41,6 +41,15 @@ class Usuario {
     };
   }
 
+  Map<String, dynamic> toMapWithoutPass() {
+    return {
+      'hash': hash,
+      'nome': nome,
+      'email': email,
+      'urlFoto': urlFoto,
+    };
+  }
+
   factory Usuario.fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
   
