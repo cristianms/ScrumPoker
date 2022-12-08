@@ -18,8 +18,10 @@ import 'package:scrumpoker/widgets/app_text.dart';
 
 /// Widget que representa o formulário de alteração de dados interno
 class CadastroUsuarioPage extends StatefulWidget {
+  const CadastroUsuarioPage({Key key}) : super(key: key);
+
   @override
-  _CadastroUsuarioPageState createState() => _CadastroUsuarioPageState();
+  State<CadastroUsuarioPage> createState() => _CadastroUsuarioPageState();
 }
 
 class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
@@ -52,8 +54,8 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
     Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
 
     // Preenche os campos do formulário
-    this._tNome.text = usuario.nome;
-    this._tEmail.text = usuario.email;
+    _tNome.text = usuario.nome;
+    _tEmail.text = usuario.email;
 
     return Form(
       key: _formKey,
@@ -63,8 +65,8 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             child: _getCircleAvatar(usuario.urlFoto),
             onTap: () => _tirarFotoReduzida(),
           ),
-          SizedBox(height: 5),
-          Center(
+          const SizedBox(height: 5),
+          const Center(
             child: Text(
               "Clique na imagem para atualizar a foto (opcional)",
               style: TextStyle(
@@ -81,14 +83,14 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             keyboardType: TextInputType.text,
             action: TextInputAction.next,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           AppText(
             "E-mail",
             "Não é possível alterar o e-mail",
             controller: _tEmail,
             enable: false,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           StreamBuilder<bool>(
             stream: _bloc.stream,
             initialData: false,
@@ -124,11 +126,11 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
       nome: _tNome.text.trim(),
       email: _tEmail.text.trim(),
     );
-    final response = await _bloc.cadastrar(context, usuario, file: this._image);
+    final response = await _bloc.cadastrar(context, usuario, file: _image);
     // Se a request for bem sucedida redireciona para a Home
     if (response.ok) {
       Snack.show(context, "Informações atualizadas!");
-      push(context, HomePage(), replace: true);
+      push(context, const HomePage(), replace: true);
     } else {
       alert(context, response.msg);
     }
@@ -142,7 +144,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
         maxWidth: 300);
     setState(() {
       // print()
-      this._image = File(pickedFile.path);
+      _image = File(pickedFile.path);
 
 //      final bytes = File(pickedFile.path).readAsBytesSync();
 //      ImagemUtils.saveImageToPrefs(base64Encode(bytes));
@@ -161,16 +163,16 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              shape: this._image != null || url != null
+              shape: _image != null || url != null
                   ? BoxShape.circle
                   : BoxShape.rectangle,
-              image: new DecorationImage(
+              image: DecorationImage(
                   fit: BoxFit.fill,
-                  image: this._image != null
-                      ? FileImage(this._image)
+                  image: _image != null
+                      ? FileImage(_image)
                       : (url != null
                           ? CachedNetworkImageProvider(url)
-                          : AssetImage("assets/imagens/camera.png"))),
+                          : const AssetImage("assets/imagens/camera.png"))),
             ),
           ),
         ],

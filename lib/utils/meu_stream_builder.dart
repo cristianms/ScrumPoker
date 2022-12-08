@@ -36,7 +36,7 @@ class MeuStreamBuilder<T> extends StatelessWidget {
   }
 
   Widget _loader() {
-    return Center(
+    return const Center(
       child: CircularProgressIndicator(),
     );
   }
@@ -50,7 +50,7 @@ class MeuStreamBuilder<T> extends StatelessWidget {
     //     child: Text('Ocorreu uma falha: hasError'),
     //   ),
     // );
-    return Text('Ocorreu uma falha');
+    return const Text('Ocorreu uma falha');
   }
 
   // Widget _telaSemDados() {

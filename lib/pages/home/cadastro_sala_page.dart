@@ -13,17 +13,13 @@ import 'package:scrumpoker/widgets/app_text.dart';
 class CadastroSalaPage extends StatefulWidget {
   final DocumentSnapshot snapshotSala;
 
-  CadastroSalaPage({this.snapshotSala});
+  const CadastroSalaPage({Key key, this.snapshotSala}) : super(key: key);
 
   @override
-  _CadastroSalaPageState createState() =>
-      _CadastroSalaPageState(snapshotSala: this.snapshotSala);
+  State<CadastroSalaPage> createState() => _CadastroSalaPageState();
 }
 
 class _CadastroSalaPageState extends State<CadastroSalaPage> {
-  /// Snapshot de Sala, reebido nos casos de alteração de uma sala existente
-  DocumentSnapshot snapshotSala;
-
   /// Campo para a descrição
   final _tDescricao = TextEditingController();
 
@@ -38,13 +34,12 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
   // Instância AppModel para provider
   AppModel appModel;
 
-  _CadastroSalaPageState({this.snapshotSala});
-
+  @override
   void initState() {
     super.initState();
     // Se receber a snapshot é uma alteração, então carregamos os dados
-    if (snapshotSala != null) {
-      sala = Sala.fromMap(snapshotSala.data());
+    if (widget.snapshotSala != null) {
+      sala = Sala.fromMap(widget.snapshotSala.data());
     }
   }
 
@@ -59,12 +54,11 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
     // Inicializa o provider de AppModel
     appModel = Provider.of<AppModel>(context);
 
-    if (snapshotSala != null) {
+    if (widget.snapshotSala != null) {
       _tDescricao.text = sala.descricao;
     }
 
-    var tituloAppBar =
-        snapshotSala != null ? "Sala: " + sala.descricao : "Nova sala";
+    var tituloAppBar = widget.snapshotSala != null ? "Sala: ${sala.descricao}" : "Nova sala";
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -78,7 +72,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
                 //   child: GestureDetector(
                 //     onTap: () async {
                 //       final response = await FirebaseService()
-                //           .deletar(context, snapshotSala?.id);
+                //           .deletar(context, widget.snapshotSala?.id);
                 //       if (response.ok) {
                 //         pop(context);
                 //         pop(context);
@@ -92,12 +86,12 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
                 //   ),
                 // ),
                 Padding(
-                  padding: EdgeInsets.only(right: 20.0),
+                  padding: const EdgeInsets.only(right: 20.0),
                   child: GestureDetector(
                     onTap: () async {
                       _onClickCadastrar(context);
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.done,
                       size: 26.0,
                     ),
@@ -106,7 +100,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
               ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: _body(context),
       ),
     );
@@ -179,7 +173,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
     }
     sala.descricao = descricao;
     // Se é uma sala nova
-    if (snapshotSala == null) {
+    if (widget.snapshotSala == null) {
       sala.hashCriador = appModel.usuario.hash;
       // O usuário criador é automaticamente adicionado a lista de participantes
       sala.hashsParticipantes = [appModel.usuario.hash];
@@ -187,7 +181,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
     final response = await _bloc.cadastrar(
       context,
       sala,
-      snapshotSala?.id,
+      widget.snapshotSala?.id,
     );
     if (response.ok) {
       pop(context);

@@ -17,8 +17,10 @@ import 'package:scrumpoker/widgets/text_error.dart';
 
 /// Widget que representa a tela de votação
 class DashboardPage extends StatefulWidget {
+  const DashboardPage({Key key}) : super(key: key);
+
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
@@ -41,14 +43,14 @@ class _DashboardPageState extends State<DashboardPage> {
     Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: double.infinity,
           child: AppButton(
             'Cadastrar nova sala',
             onPressed: () => _onClickCadastrarNovaSala(context),
           ),
         ),
-        Container(
+        SizedBox(
           width: double.infinity,
           child: AppButton(
             'Utilizar código de convite',
@@ -70,10 +72,10 @@ class _DashboardPageState extends State<DashboardPage> {
       stream: FirebaseService().salasStream.where('hashCriador', isEqualTo: usuario.hash).orderBy('descricao').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return TextError("Não foi possível buscar as salas");
+          return const TextError("Não foi possível buscar as salas");
         }
         if (!snapshot.hasData) {
-          return Center(
+          return const Center(
             child: Text("Nenhuma sala encontrada até o momento"),
           );
         }
@@ -82,11 +84,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
         final documentsSalasVinculadasUsuario = documentsSalas.where((sala) => Sala.fromMap(sala.data()).hashsParticipantes.contains(usuario.hash)).toList();
         if (documentsSalasVinculadasUsuario.isEmpty) {
-          return Center(
+          return const Center(
             child: Text(
-              "Você ainda não tem vínculo com nenhum sala.\nCrie uma sala e covide seus colegas do time através do código da sala ou aplique o código de convite recebido.",
+              'Você ainda não tem vínculo com nenhuma sala.\n\nCrie uma sala e covide seus colegas do time através do código da sala ou aplique o código de convite recebido.',
               style: TextStyle(
                 fontSize: 20,
+                fontFamily: 'RobotoMono'
+
               ),
             ),
           );
@@ -118,13 +122,13 @@ class _DashboardPageState extends State<DashboardPage> {
 
   /// Abre dialog para digitação do convite
   void _showDialog(BuildContext context) async {
-    this._controllerCodConvite.text = '';
+    _controllerCodConvite.text = '';
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Utilizar convite'),
+          title: const Text('Utilizar convite'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -140,13 +144,13 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Utilizar'),
+              child: const Text('Utilizar'),
               onPressed: () => _validarCodigoConvite(context),
             ),
           ],
@@ -157,8 +161,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   /// Valida código de convite
   void _validarCodigoConvite(BuildContext context) {
-    var codigoConvite = this._controllerCodConvite.text;
-    if (codigoConvite.length > 0) {
+    var codigoConvite = _controllerCodConvite.text;
+    if (codigoConvite.isNotEmpty) {
       FirebaseService().utilizarConvite(context, codigoConvite, usuario.hash);
       pop(context);
     } else {
@@ -168,7 +172,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   /// Função para cadastro de nova sala
   _onClickCadastrarNovaSala(BuildContext context) {
-    push(context, CadastroSalaPage());
+    push(context, const CadastroSalaPage());
   }
 }
 
@@ -194,19 +198,19 @@ class CardSalaDashboard extends StatelessWidget {
       ),
       child: Card(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                sala.descricao != null ? sala.descricao : "Sem título",
-                style: TextStyle(
+                sala.descricao ?? "Sem título",
+                style: const TextStyle(
                   fontSize: 25,
                 ),
               ),
               Text(
                 "\n${sala.hashsParticipantes.length} participante(s)",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15,
                   color: Colors.grey,
                 ),

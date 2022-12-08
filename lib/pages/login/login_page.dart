@@ -16,14 +16,16 @@ import '../home/home_page.dart';
 
 /// Widget que representa a tela de login
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key key}) : super(key: key);
+
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 /// Declaração da classe principal do componente
 class _LoginPageState extends State<LoginPage> {
   /// Chave para controlle do formulário
-  var _formkey = GlobalKey<FormState>();
+  final _formkey = GlobalKey<FormState>();
 
   /// Campo login
   final tLogin = TextEditingController();
@@ -69,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text("Scrum Poker"),
+          title: const Text("Scrum Poker"),
         ),
         body: _body(brightness),
       ),
@@ -80,12 +82,12 @@ class _LoginPageState extends State<LoginPage> {
     return Form(
       key: _formkey,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: ListView(
           children: <Widget>[
-            SizedBox(height: 20),
-            FlutterLogo(size: 70),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const FlutterLogo(size: 70),
+            const SizedBox(height: 20),
             AppText(
               "Login",
               "Digite o login",
@@ -96,7 +98,7 @@ class _LoginPageState extends State<LoginPage> {
               nextFocus: _focusSenha,
               autoFocus: true,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             AppText(
               "Senha",
               "Digite a senha",
@@ -107,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
               action: TextInputAction.done,
               focusNode: _focusSenha,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Validar login
             StreamBuilder<bool>(
                 stream: _bloc.stream,
@@ -119,9 +121,9 @@ class _LoginPageState extends State<LoginPage> {
                     showProgress: snapshot.data,
                   );
                 }),
-            SizedBox(height: 10),
-            Divider(),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
+            const Divider(),
+            const SizedBox(height: 10),
             // Entrar com conta Google
             StreamBuilder<bool>(
               stream: _streamControllerGoogleSigIn.stream,
@@ -132,18 +134,18 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () => _onClickLoginGoogle(context),
                   );
                 }
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               },
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             /// Novo cadastro
             Container(
               height: 46,
-              margin: EdgeInsets.only(top: 0),
+              margin: const EdgeInsets.only(top: 0),
               child: InkWell(
                 onTap: _onClickCadastrar,
-                child: Text(
+                child: const Text(
                   "Não possui conta? Cadastre-se aqui",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18, color: Colors.blue, decoration: TextDecoration.underline),
@@ -169,9 +171,13 @@ class _LoginPageState extends State<LoginPage> {
     );
     ApiResponse response = await _bloc.login(context, usuarioLogin);
     if (response.ok) {
-      push(context, HomePage(), replace: true);
+      if (mounted) {
+        push(context, const HomePage(), replace: true);
+      }
     } else {
-      alert(context, response.msg);
+      if (mounted) {
+        alert(context, response.msg);
+      }
     }
   }
 
@@ -179,16 +185,20 @@ class _LoginPageState extends State<LoginPage> {
     _streamControllerGoogleSigIn.add(true);
     ApiResponse response = await _bloc.loginGoogle(context);
     if (response.ok) {
-      push(context, HomePage(), replace: true);
+      if (mounted) {
+        push(context, const HomePage(), replace: true);
+      }
     } else {
-      alert(context, response.msg, callback: () {
-        return _streamControllerGoogleSigIn.add(false);
-      });
+      if (mounted) {
+        alert(context, response.msg, callback: () {
+          return _streamControllerGoogleSigIn.add(false);
+        });
+      }
     }
   }
 
   _onClickCadastrar() {
-    push(context, CadastroLoginPage(), replace: true);
+    push(context, const CadastroLoginPage(), replace: true);
   }
 
   String _validateLogin(String value) {

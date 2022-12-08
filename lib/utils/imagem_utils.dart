@@ -8,14 +8,14 @@ import 'package:scrumpoker/utils/prefs.dart';
 
 class ImagemUtils {
 
-  static const String IMG_KEY = 'IMAGE_KEY';
+  static const String imgKey = 'IMAGE_KEY';
 
   static void saveImageToPrefs(String value) async {
-    Prefs.setString(IMG_KEY, value);
+    Prefs.setString(imgKey, value);
   }
 
   static Future<String> getImageFromPrefs() async {
-    return Prefs.getString(IMG_KEY);
+    return Prefs.getString(imgKey);
   }
 
   static String base64String(Uint8List data) {

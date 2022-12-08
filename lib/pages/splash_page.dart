@@ -10,8 +10,10 @@ import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
 
 class SplashPage extends StatefulWidget {
+  const SplashPage({Key key}) : super(key: key);
+
   @override
-  _SplashPageState createState() => _SplashPageState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
 class _SplashPageState extends State<SplashPage> {
@@ -23,7 +25,7 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
 
     // Delay de 3 segundos
-    Future futureDelay = Future.delayed(Duration(seconds: 4));
+    Future futureDelay = Future.delayed(const Duration(seconds: 4));
     // Autenticação no Firebase
     User firebaseUser = FirebaseAuth.instance.currentUser;
     // Quando todas as future terminarem faz a validação
@@ -35,7 +37,7 @@ class _SplashPageState extends State<SplashPage> {
             .getUsuarioCollectionByHash(firebaseUser.uid)
             .then((Usuario usuario) => verificaUsuario(usuario));
       } else {
-        push(context, LoginPage(), replace: true);
+        push(context, const LoginPage(), replace: true);
       }
     });
   }
@@ -44,9 +46,9 @@ class _SplashPageState extends State<SplashPage> {
   verificaUsuario(Usuario usuario) {
     if (usuario != null) {
       Provider.of<AppModel>(context, listen: false).usuario = usuario;
-      push(context, HomePage(), replace: true);
+      push(context, const HomePage(), replace: true);
     } else {
-      push(context, LoginPage(), replace: true);
+      push(context, const LoginPage(), replace: true);
     }
   }
 
@@ -55,9 +57,8 @@ class _SplashPageState extends State<SplashPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
+      children: const <Widget>[
         Center(
-//          child: CircularProgressIndicator(),
           child: FlutterLogo(
             size: 150,
           ),

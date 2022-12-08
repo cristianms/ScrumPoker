@@ -24,6 +24,7 @@ dependencies:
   share_plus: ^6.3.0
   clipboard: ^0.1.3
 dev_dependencies:
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
 # dependency_overrides:
@@ -32,3 +33,14 @@ flutter:
   uses-material-design: true
   assets:
     - assets/imagens/
+  fonts:
+    - family: Raleway
+      fonts:
+        - asset: fonts/Raleway-Regular.ttf
+        - asset: fonts/Raleway-Italic.ttf
+          style: italic
+    - family: RobotoMono
+      fonts:
+        - asset: fonts/RobotoMono-Regular.ttf
+        - asset: fonts/RobotoMono-Bold.ttf
+          weight: 700

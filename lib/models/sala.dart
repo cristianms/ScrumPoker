@@ -62,14 +62,14 @@ class Sala {
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is Sala &&
-        o.descricao == descricao &&
-        o.hashCriador == hashCriador &&
-        listEquals(o.hashsParticipantes, hashsParticipantes) &&
-        o.votacaoConcluida == votacaoConcluida;
+    return other is Sala &&
+        other.descricao == descricao &&
+        other.hashCriador == hashCriador &&
+        listEquals(other.hashsParticipantes, hashsParticipantes) &&
+        other.votacaoConcluida == votacaoConcluida;
   }
 
   @override

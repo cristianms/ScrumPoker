@@ -15,8 +15,10 @@ import 'login_page.dart';
 
 /// Widget que representa o formulário de cadastro
 class CadastroLoginPage extends StatefulWidget {
+  const CadastroLoginPage({Key key}) : super(key: key);
+
   @override
-  _CadastroLoginPageState createState() => _CadastroLoginPageState();
+  State<CadastroLoginPage> createState() => _CadastroLoginPageState();
 }
 
 class _CadastroLoginPageState extends State<CadastroLoginPage> {
@@ -36,6 +38,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
   // Bloc
   final _bloc = CadastroBloc();
 
+  @override
   void initState() {
     super.initState();
   }
@@ -55,10 +58,10 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             home: Scaffold(
               resizeToAvoidBottomInset: false,
               appBar: AppBar(
-                title: Text("Cadastro"),
+                title: const Text("Cadastro"),
               ),
               body: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: _body(context),
               ),
             )),
@@ -74,8 +77,8 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             child: _getCircleAvatar(),
             onTap: () => _tirarFoto(),
           ),
-          SizedBox(height: 5),
-          Center(
+          const SizedBox(height: 5),
+          const Center(
             child: Text("Clique na imagem para adicionar uma foto (opcional)",
                 style: TextStyle(
                   color: Colors.grey,
@@ -92,7 +95,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             autoFocus: true,
             nextFocus: _focusSenha,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           AppText(
             "E-mail",
             "Informe o seu e-mail",
@@ -103,7 +106,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             focusNode: _focusSenha,
             nextFocus: _focusEmail,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           AppText(
             "Senha",
             "Digite a senha",
@@ -114,7 +117,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             action: TextInputAction.done,
             focusNode: _focusEmail,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           StreamBuilder<bool>(
               stream: _bloc.stream,
               initialData: false,
@@ -131,11 +134,11 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
 //          ),
           Container(
             height: 46,
-            margin: EdgeInsets.only(top: 10),
+            margin: const EdgeInsets.only(top: 10),
             // child: RaisedButton(
             //   color: Colors.white,
             child: TextButton(
-              child: Text(
+              child: const Text(
                 "Cancelar",
                 style: TextStyle(
                   color: Colors.blue,
@@ -177,7 +180,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
   }
 
   _onClickVoltar(context) {
-    push(context, LoginPage(), replace: true);
+    push(context, const LoginPage(), replace: true);
   }
 
   _onClickCadastrar(context) async {
@@ -192,9 +195,9 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
       email: email,
       senha: senha,
     );
-    final response = await _bloc.inserir(context, usuario, file: this._image);
+    final response = await _bloc.inserir(context, usuario, file: _image);
     if (response.ok) {
-      push(context, HomePage(), replace: true);
+      push(context, const HomePage(), replace: true);
     } else {
       alert(context, response.msg);
     }
@@ -204,7 +207,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
     setState(() {
       if (pickedFile != null) {
-        this._image = File(pickedFile.path);
+        _image = File(pickedFile.path);
       }
     });
   }
@@ -219,13 +222,8 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-                shape:
-                    this._image != null ? BoxShape.circle : BoxShape.rectangle,
-                image: new DecorationImage(
-                    fit: BoxFit.fill,
-                    image: this._image != null
-                        ? FileImage(this._image)
-                        : AssetImage('assets/imagens/camera.png'))),
+                shape: _image != null ? BoxShape.circle : BoxShape.rectangle,
+                image: DecorationImage(fit: BoxFit.fill, image: _image != null ? FileImage(_image) : const AssetImage('assets/imagens/camera.png'))),
           )
         ],
       ),

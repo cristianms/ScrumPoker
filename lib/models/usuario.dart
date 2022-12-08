@@ -72,15 +72,15 @@ class Usuario {
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
   
-    return o is Usuario &&
-      o.hash == hash &&
-      o.nome == nome &&
-      o.email == email &&
-      o.urlFoto == urlFoto &&
-      o.senha == senha;
+    return other is Usuario &&
+      other.hash == hash &&
+      other.nome == nome &&
+      other.email == email &&
+      other.urlFoto == urlFoto &&
+      other.senha == senha;
   }
 
   @override

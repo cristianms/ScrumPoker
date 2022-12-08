@@ -7,29 +7,29 @@ class AppButton extends StatelessWidget {
   final bool showProgress;
   final bool disabled;
 
-  AppButton(this.label, {this.onPressed, this.showProgress = false, this.disabled = false});
+  const AppButton(this.label, {Key key, this.onPressed, this.showProgress = false, this.disabled = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         shadowColor: Colors.blue,
       ),
+      // color: Colors.blue,
+      onPressed: disabled == false ? onPressed : null,
       child: showProgress
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ))
           : Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
               ),
             ),
-      // color: Colors.blue,
-      onPressed: disabled == false ? onPressed : null,
     );
   }
 }

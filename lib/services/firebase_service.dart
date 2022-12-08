@@ -81,7 +81,6 @@ class FirebaseService {
       // Resposta genérica
       return ApiResponse.ok();
     } catch (error) {
-      print("Firebase error $error");
       return ApiResponse.error(msg: "Não foi possível fazer o login");
     }
   }
@@ -120,7 +119,6 @@ class FirebaseService {
       // Resposta genérica
       return ApiResponse.ok();
     } catch (error) {
-      print("Firebase error $error");
       return ApiResponse.error(msg: "Não foi possível fazer o login\n${error.toString()}");
     }
   }
@@ -175,9 +173,7 @@ class FirebaseService {
       // Resposta genérica
       return ApiResponse.ok(msg: "Usuário criado com sucesso");
     } catch (error) {
-      print(error);
       if (error is PlatformException) {
-        print("Error Code ${error.code}");
         return ApiResponse.error(msg: "Erro ao criar um usuário.\n\n${error.message}");
       }
       return ApiResponse.error(msg: "Não foi possível criar um usuário.");
@@ -216,9 +212,7 @@ class FirebaseService {
       // Resposta genérica
       return ApiResponse.ok(msg: "Sala alterada com sucesso");
     } catch (error) {
-      print(error);
       if (error is PlatformException) {
-        print("Error Code ${error.code}");
         return ApiResponse.error(msg: "Erro ao alterar a sala.\n\n${error.message}");
       }
       return ApiResponse.error(msg: "Não foi possível alterar a sala.");
@@ -238,7 +232,6 @@ class FirebaseService {
       return ApiResponse.ok(msg: "Sala excluída com sucesso");
     } catch (error) {
       if (error is PlatformException) {
-        print("Error Code ${error.code}");
         return ApiResponse.error(msg: "Erro ao excluir a sala.\n\n${error.message}");
       }
       return ApiResponse.error(msg: "Não foi possível excluir a sala.");
@@ -254,7 +247,6 @@ class FirebaseService {
       return ApiResponse.ok(msg: "Sala excluída com sucesso");
     } catch (error) {
       if (error is PlatformException) {
-        print("Error Code ${error.code}");
         return ApiResponse.error(msg: "Erro ao excluir a sala.\n\n${error.message}");
       }
       return ApiResponse.error(msg: "Não foi possível excluir a sala.");
@@ -353,10 +345,10 @@ class FirebaseService {
   resetarVotacoes(String hashSala) async {
     await toggleVotacaoEncerrada(hashSala, false);
     List<DocumentSnapshot> listaVotacoesSala = await getVotacaoDocumentsByHashPart(hashSala);
-    listaVotacoesSala.forEach((document) async {
+    for (var document in listaVotacoesSala) {
       var votacao = Votacao.fromMap(document.data());
       votacao.nota = null;
       await votacoesStream.doc(document.id).set(votacao.toMap());
-    });
+    }
   }
 }

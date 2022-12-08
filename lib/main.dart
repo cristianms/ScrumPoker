@@ -18,11 +18,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   // Chama o primeiro widget da árvore
-  runApp(App());
+  runApp(const App());
 }
 
 /// App que representa a raiz da navegação dos widgets
 class App extends StatelessWidget {
+  const App({Key key}) : super(key: key);
+
   /// Principal widget da aplicação
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,7 @@ class App extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Scrum Poker',
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: SplashPage(),
+        home: const SplashPage(),
         builder: (_, Widget child) {
           return Scaffold(
             key: GlobalScaffold.instance.scaffoldKey,

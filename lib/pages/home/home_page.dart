@@ -12,8 +12,10 @@ import 'package:scrumpoker/utils/nav.dart';
 import 'cadastro_sala_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({Key key}) : super(key: key);
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin<HomePage> {
@@ -70,12 +72,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+    GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     Usuario usuario = Provider.of<AppModel>(context, listen: true).usuario;
 
     List arrayTitles = ['Home', 'Meus dados'];
-    List arrayPages = [DashboardPage(), CadastroUsuarioPage()];
+    List arrayPages = [const DashboardPage(), const CadastroUsuarioPage()];
 
     return Scaffold(
       appBar: AppBar(
@@ -87,19 +89,19 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         top: true,
         bottom: true,
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: arrayPages[selectedIndex],
         ),
       ),
       drawer: SafeArea(
         child: Drawer(
-          key: _scaffoldKey,
+          key: scaffoldKey,
           child: ListView(
             children: <Widget>[
               usuario != null ? _header(context, usuario) : Container(),
               ListTile(
-                leading: Icon(Icons.home),
-                title: Text("Home"),
+                leading: const Icon(Icons.home),
+                title: const Text("Home"),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -108,8 +110,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 },
               ),
               ListTile(
-                leading: Icon(Icons.person),
-                title: Text("Meus dados"),
+                leading: const Icon(Icons.person),
+                title: const Text("Meus dados"),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -117,20 +119,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   });
                 },
               ),
-              Divider(),
+              const Divider(),
               ListTile(
-                leading: Icon(Icons.exit_to_app),
-                title: Text("Logout"),
+                leading: const Icon(Icons.exit_to_app),
+                title: const Text("Logout"),
                 onTap: () => _onClickLogout(context),
               ),
             ],
           ),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
         tooltip: "Cadastrar nova sala",
         onPressed: () => _onClickCadastrarNovaSala(context),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -156,11 +159,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     // Encerra página atual (Home)
     Navigator.pop(context);
     // Abre tela de login
-    push(context, LoginPage(), replace: true);
+    push(context, const LoginPage(), replace: true);
   }
 
   /// Função para cadastro de nova sala
   _onClickCadastrarNovaSala(BuildContext context) {
-    push(context, CadastroSalaPage());
+    push(context, const CadastroSalaPage());
   }
 }

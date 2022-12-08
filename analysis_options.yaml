@@ -7,7 +7,7 @@
 
 # The following line activates a set of recommended lints for Flutter apps,
 # packages, and plugins designed to encourage good coding practices.
-# include: package:flutter_lints/flutter.yaml
+include: package:flutter_lints/flutter.yaml
 
 linter:
   # The lint rules applied to this project can be customized in the
@@ -27,3 +27,110 @@ linter:
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+
+# Dart Code Metrics
+analyzer:
+  plugins:
+    - dart_code_metrics
+
+dart_code_metrics:
+  # Métricas
+  metrics:
+    # Complexidade ciclomática
+    # Ref.: https://dartcodemetrics.dev/docs/metrics/cyclomatic-complexity
+    cyclomatic-complexity: 20
+    # Número de parâmetros em métodos/funções
+    # Ref.: 
+    number-of-parameters: 4
+    # Número máximo de aninhamentos
+    # Ref.: https://dartcodemetrics.dev/docs/metrics/maximum-nesting-level
+    maximum-nesting-level: 5
+    # Número máximo de linas no método
+    # Ref.: https://dartcodemetrics.dev/docs/metrics/source-lines-of-code
+    source-lines-of-code: 50
+    # Permite definirmos custos para os débitos técnicos
+    # Ref.: https://dartcodemetrics.dev/docs/metrics/technical_debt
+    technical-debt:
+      threshold: 1                        # Limite de débitos técnicos
+      todo-cost: 161                      # Custo de um TO-DO
+      ignore-cost: 320                    # Custo de um ignore
+      ignore-for-file-cost: 396           # Custo de um ignore for file
+      as-dynamic-cost: 322                # Custo de um 'as dynamic'
+      deprecated-annotations-cost: 37     # Custo de uma anotação '@deprecated'
+      file-nullsafety-migration-cost: 41  # Custo de um ignore referente a Nullsafety
+      unit-type: "R$"                     # Unidade de valor
+  # Diretórios/arquivos a serem ignorados das métricas
+  metrics-exclude:
+    - test/**
+  # Regras
+  rules:
+    #
+    # COMMONS
+    #
+    # Evitar blocos vazios {}
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/no-empty-block
+    - no-empty-block
+    # Sempre indentar com ","
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/prefer-trailing-comma
+    - prefer-trailing-comma
+    # Evitar esquecer parênteses em instruções cascateadas com ?? sem parênteses
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/avoid-cascade-after-if-null
+    - avoid-cascade-after-if-null
+    # Evitar esquecer de definir tratamento para todas as constantes do enum quando houver métodos
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/avoid-missing-enum-constant-in-map
+    - avoid-missing-enum-constant-in-map
+    # Evita aninhamentos ternários de mais de um nível (definir número aceitável)
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/avoid-nested-conditional-expressions
+    - avoid-nested-conditional-expressions:
+        acceptable-level: 1
+    # Evita Parâmetros não utilizados
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/avoid-unused-parameters
+    - avoid-unused-parameters
+    # Sugere que as literais sempre devem estar a direita nas sentenças
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/binary-expression-operand-order
+    - binary-expression-operand-order
+    # Evita comparações redundantes (if (valor == true))
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/no-boolean-literal-compare
+    - no-boolean-literal-compare
+    # Evita passar argumentos repetidos sem intenção
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/no-equal-arguments
+    - no-equal-arguments
+    # Evita IFs e ELSEs com mesmo tratamento
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/no-equal-then-else
+    - no-equal-then-else
+    # Sugere async await ao invés de then
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/prefer-async-await
+    - prefer-async-await
+    # Prefere utilizar o .first ao invés do (0) quando possível
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/prefer-first
+    - prefer-first
+    # Prefere utilizar o .last ao invés do get(length-1) quando possível
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/prefer-last
+    - prefer-last
+    # Evita ter arquivos com uma classe que não condiz com o nome do arquivo
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/prefer-match-file-name
+    - prefer-match-file-name
+    # Evita acessar o mesmo objeto repetidamente, sugere aproveitar uma mesma referência
+    # Ref.: https://dartcodemetrics.dev/docs/rules/common/prefer-moving-to-variable
+    - prefer-moving-to-variable
+    #
+    # FLUTTER
+    #
+    # Evita esquecer de remover listeners
+    # Ref.: https://dartcodemetrics.dev/docs/rules/flutter/always-remove-listener
+    - always-remove-listener
+    # Revita métodos que retornam widgets, prefere criar um widget
+    # Ref.: https://dartcodemetrics.dev/docs/rules/flutter/avoid-returning-widgets
+    - avoid-returning-widgets
+    # Evita utilizar shrinkWrap em listas, motivo no link
+    # Ref.: https://dartcodemetrics.dev/docs/rules/flutter/avoid-shrink-wrap-in-lists
+    - avoid-shrink-wrap-in-lists
+    # Prefere usar construtores mais intuitivos para EdgeInsets
+    # Ref.: https://dartcodemetrics.dev/docs/rules/flutter/prefer-correct-edge-insets-constructor
+    - prefer-correct-edge-insets-constructor
+  rules-exclude:
+    - test/**
+  anti-patterns:
+    # configures the list of anti-patterns
+    - long-method:
+        severity: warning
