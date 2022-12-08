@@ -1,6 +1,7 @@
 // @dart=2.9
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/models/app_model.dart';
 import 'package:scrumpoker/models/usuario.dart';
@@ -9,6 +10,8 @@ import 'package:scrumpoker/pages/home/dashboard_page.dart';
 import 'package:scrumpoker/pages/login/login_page.dart';
 import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
+import 'package:scrumpoker/utils/snack.dart';
+import 'package:scrumpoker/widgets/app_text.dart';
 import 'cadastro_sala_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,6 +27,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   /// Usuario logado
   Usuario usuario;
+
+  /// Campo de código de convite
+  final _controllerCodConvite = TextEditingController();
 
   @override
   void initState() {
@@ -130,12 +136,86 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
-        tooltip: "Cadastrar nova sala",
-        onPressed: () => _onClickCadastrarNovaSala(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _getFloatActionButton(),
     );
+  }
+
+  Widget _getFloatActionButton() {
+    return SpeedDial(
+      icon: Icons.add,
+      activeIcon: Icons.close,
+      visible: true,
+      curve: Curves.bounceIn,
+      children: [
+        // FAB 1
+        SpeedDialChild(
+          child: const Icon(Icons.note_add, color: Colors.white),
+          backgroundColor: Colors.blue,
+          onTap: () => _dialogCodigoConvite(context),
+          label: 'Adicionar código de convite',
+        ),
+        // FAB 2
+        SpeedDialChild(
+          child: const Icon(Icons.playlist_add, color: Colors.white),
+          backgroundColor: Colors.blue,
+          onTap: () => _cadastrarNovaSala(context),
+          label: 'Cadastrar nova sala',
+        ),
+      ],
+    );
+  }
+
+  /// Abre dialog para digitação do convite
+  void _dialogCodigoConvite(BuildContext context) async {
+    _controllerCodConvite.text = '';
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Utilizar convite'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                AppText(
+                  "Código de sala",
+                  "Informe o seu código",
+                  controller: _controllerCodConvite,
+                  keyboardType: TextInputType.text,
+                  action: TextInputAction.done,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Utilizar'),
+              onPressed: () => _validarCodigoConvite(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Valida código de convite
+  void _validarCodigoConvite(BuildContext context) async {
+    var codigoConvite = _controllerCodConvite.text;
+    if (codigoConvite.isNotEmpty) {
+      final usuarioLogado = Provider.of<AppModel>(context, listen: false).usuario;
+      await FirebaseService().utilizarConvite(context, codigoConvite, usuarioLogado.hash);
+      if (mounted) {
+        pop(context);
+      }
+    } else {
+      Snack.show(context, "Convite inválido!");
+    }
   }
 
   /// Cabeçalho do drawer menu
@@ -163,7 +243,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   /// Função para cadastro de nova sala
-  _onClickCadastrarNovaSala(BuildContext context) {
+  _cadastrarNovaSala(BuildContext context) {
     push(context, const CadastroSalaPage());
   }
 }

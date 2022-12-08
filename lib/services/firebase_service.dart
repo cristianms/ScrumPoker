@@ -254,7 +254,7 @@ class FirebaseService {
   }
 
   /// Método responsável por fazer a utilização de um convite
-  utilizarConvite(BuildContext context, String hashSala, String hashUsuario) async {
+  Future<void> utilizarConvite(BuildContext context, String hashSala, String hashUsuario) async {
     assert(context != null);
     assert(hashSala != null);
     assert(hashUsuario != null);

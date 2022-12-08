@@ -6,13 +6,9 @@ import 'package:scrumpoker/models/app_model.dart';
 import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/models/votacao.dart';
-import 'package:scrumpoker/pages/home/cadastro_sala_page.dart';
 import 'package:scrumpoker/pages/home/votacao_page.dart';
 import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
-import 'package:scrumpoker/utils/snack.dart';
-import 'package:scrumpoker/widgets/app_button.dart';
-import 'package:scrumpoker/widgets/app_text.dart';
 import 'package:scrumpoker/widgets/text_error.dart';
 
 /// Widget que representa a tela de votação
@@ -24,9 +20,6 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  /// Campo de código de convite
-  final _controllerCodConvite = TextEditingController();
-
   /// Obtém usuário logado
   Usuario usuario;
 
@@ -43,20 +36,6 @@ class _DashboardPageState extends State<DashboardPage> {
     Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
     return Column(
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: AppButton(
-            'Cadastrar nova sala',
-            onPressed: () => _onClickCadastrarNovaSala(context),
-          ),
-        ),
-        SizedBox(
-          width: double.infinity,
-          child: AppButton(
-            'Utilizar código de convite',
-            onPressed: () => _showDialog(context),
-          ),
-        ),
         Expanded(
           child: _listaSalas(context, usuario),
         ),
@@ -69,32 +48,23 @@ class _DashboardPageState extends State<DashboardPage> {
     // Monta lista de acordo com o stream da coleção de salas
     return StreamBuilder<QuerySnapshot>(
       // Busca todas as salas por enquanto, depois vejo como melhorar
-      stream: FirebaseService().salasStream.where('hashCriador', isEqualTo: usuario.hash).orderBy('descricao').snapshots(),
+      stream: FirebaseService()
+          .salasStream
+          .where(
+            'hashsParticipantes',
+            arrayContains: usuario.hash,
+          )
+          .orderBy('descricao')
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const TextError("Não foi possível buscar as salas");
         }
-        if (!snapshot.hasData) {
-          return const Center(
-            child: Text("Nenhuma sala encontrada até o momento"),
-          );
+        if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
+          return const MensagemNenhumaSala();
         }
 
-        final documentsSalas = snapshot.data.docs;
-
-        final documentsSalasVinculadasUsuario = documentsSalas.where((sala) => Sala.fromMap(sala.data()).hashsParticipantes.contains(usuario.hash)).toList();
-        if (documentsSalasVinculadasUsuario.isEmpty) {
-          return const Center(
-            child: Text(
-              'Você ainda não tem vínculo com nenhuma sala.\n\nCrie uma sala e covide seus colegas do time através do código da sala ou aplique o código de convite recebido.',
-              style: TextStyle(
-                fontSize: 20,
-                fontFamily: 'RobotoMono'
-
-              ),
-            ),
-          );
-        }
+        final docsSalasVinculadasUsuario = snapshot.data.docs;
 
         return Row(
           children: [
@@ -102,13 +72,13 @@ class _DashboardPageState extends State<DashboardPage> {
               child: SizedBox(
                 height: double.infinity,
                 child: ListView.builder(
-                  itemCount: documentsSalasVinculadasUsuario != null ? documentsSalasVinculadasUsuario.length : 0,
+                  itemCount: docsSalasVinculadasUsuario != null ? docsSalasVinculadasUsuario.length : 0,
                   itemBuilder: (context, index) {
-                    Sala sala = Sala.fromMap(documentsSalasVinculadasUsuario[index].data());
+                    Sala sala = Sala.fromMap(docsSalasVinculadasUsuario[index].data());
                     return CardSalaDashboard(
                       sala: sala,
                       usuario: usuario,
-                      snapSala: documentsSalasVinculadasUsuario[index],
+                      snapSala: docsSalasVinculadasUsuario[index],
                     );
                   },
                 ),
@@ -119,60 +89,50 @@ class _DashboardPageState extends State<DashboardPage> {
       },
     );
   }
+}
 
-  /// Abre dialog para digitação do convite
-  void _showDialog(BuildContext context) async {
-    _controllerCodConvite.text = '';
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Utilizar convite'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                AppText(
-                  "Código de sala",
-                  "Informe o seu código",
-                  controller: _controllerCodConvite,
-                  keyboardType: TextInputType.text,
-                  action: TextInputAction.done,
-                ),
-              ],
+class MensagemNenhumaSala extends StatelessWidget {
+  const MensagemNenhumaSala({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: const TextSpan(
+          text: 'Você ainda não tem nenhum vínculo uma ',
+          style: TextStyle(color: Colors.black54, fontSize: 22),
+          children: <TextSpan>[
+            TextSpan(
+              text: 'sala.\n\n',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            TextSpan(
+              text: 'Você pode criar uma nova sala, utilizando o botão abaixo, e convidar o seu time para o ',
             ),
-            TextButton(
-              child: const Text('Utilizar'),
-              onPressed: () => _validarCodigoConvite(context),
+            TextSpan(
+              text: 'Planning Poker ',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(
+              text: 'enviando o ',
+            ),
+            TextSpan(
+              text: 'código de convite ',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(
+              text: 'gerado pela sala.\n\n',
+            ),
+            TextSpan(
+              text: 'Ou se você recebeu um código aplique-o utilizando o botão abaixo.',
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
-  }
-
-  /// Valida código de convite
-  void _validarCodigoConvite(BuildContext context) {
-    var codigoConvite = _controllerCodConvite.text;
-    if (codigoConvite.isNotEmpty) {
-      FirebaseService().utilizarConvite(context, codigoConvite, usuario.hash);
-      pop(context);
-    } else {
-      Snack.show(context, "Convite inválido!");
-    }
-  }
-
-  /// Função para cadastro de nova sala
-  _onClickCadastrarNovaSala(BuildContext context) {
-    push(context, const CadastroSalaPage());
   }
 }
 
