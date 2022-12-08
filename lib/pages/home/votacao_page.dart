@@ -1,7 +1,7 @@
+// @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/models/app_model.dart';
 import 'package:scrumpoker/models/sala.dart';
@@ -164,7 +164,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             await FirebaseService().deletar(context, snapshotSala?.id);
         if (response.ok) {
           pop(context);
-          Snack.show("Sala excluída");
+          Snack.show(context, "Sala excluída");
         }
         break;
     }
@@ -434,12 +434,12 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   }
 
   /// Sair da votação
-  Future<bool> _sairVotacao(
-      BuildContext context, String hashSala, String hashUsuario) {
+  Future<void> _sairVotacao(
+      BuildContext context, String hashSala, String hashUsuario) async {
     // Vincula usuário a sala através da collection de votações
-    FirebaseService().excluirVotacao(hashSala, hashUsuario);
+    await FirebaseService().excluirVotacao(hashSala, hashUsuario);
     // Volta a tela anterior
-    return pop(context);
+    pop(context);
   }
 
   String _cortarNome(String s) {

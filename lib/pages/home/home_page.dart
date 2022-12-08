@@ -1,6 +1,6 @@
+// @dart=2.9
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/models/app_model.dart';
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       usuario = Provider.of<AppModel>(context, listen: false).usuario;
       FirebaseService().utilizarConvite(context, hashSala, usuario.hash);
     } else {
-      Snack.show("Convite inválido!");
+      Snack.show(context, "Convite inválido!");
     }
   }
 

@@ -1,6 +1,6 @@
+// @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/models/app_model.dart';
 import 'package:scrumpoker/models/sala.dart';
@@ -210,7 +210,7 @@ class _DashboardPageState extends State<DashboardPage> {
       FirebaseService().utilizarConvite(context, codigoConvite, usuario.hash);
       pop(context);
     } else {
-      Snack.show("Convite inválido!");
+      Snack.show(context, "Convite inválido!");
     }
   }
 

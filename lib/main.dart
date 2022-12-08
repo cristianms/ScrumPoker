@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +17,7 @@ void main() async {
 
 /// Widget que representa a inicialização do Firebase
 class InicializadorFirebase extends StatelessWidget {
-  // Executa a inicialização do Firebase fora do 'build'
+  /// Executa a inicialização do Firebase fora do 'build'
   final Future<FirebaseApp> _initializacaoFirebase = Firebase.initializeApp();
 
   @override
@@ -26,8 +27,7 @@ class InicializadorFirebase extends StatelessWidget {
       builder: (BuildContext context, snapshot) {
         // Verifica se ocorreram erros ao inicializar o Firebase
         if (snapshot.hasError) {
-          return Text(
-              'Ocorreu algum erro com a iniciaização do Firebase:\n${snapshot.error.toString()}');
+          return Text('Ocorreu algum erro com a iniciaização do Firebase:\n${snapshot.error.toString()}');
         }
         // Se inicializou o Firebase com sucesso segue a vida...
         if (snapshot.connectionState == ConnectionState.done) {
@@ -42,7 +42,7 @@ class InicializadorFirebase extends StatelessWidget {
 
 /// App que representa a raiz da navegação dos widgets
 class App extends StatelessWidget {
-  // Principal widget da aplicação
+  /// Principal widget da aplicação
   @override
   Widget build(BuildContext context) {
     // Mantém orientação apenas retrato
@@ -51,15 +51,15 @@ class App extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AppModel())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppModel()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Scrum Poker',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: ThemeData(primarySwatch: Colors.blue),
         home: SplashPage(),
-        builder: (BuildContext context, Widget child) {
+        builder: (_, Widget child) {
           return Scaffold(
             key: GlobalScaffold.instance.scaffoldKey,
             body: child,

@@ -1,6 +1,6 @@
+// @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/blocs/cadastro_sala_bloc.dart';
 import 'package:scrumpoker/models/app_model.dart';
@@ -191,7 +191,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
     );
     if (response.ok) {
       pop(context);
-      Snack.show("Dados cadastrados!");
+      Snack.show(context, "Dados cadastrados!");
     }
   }
 }

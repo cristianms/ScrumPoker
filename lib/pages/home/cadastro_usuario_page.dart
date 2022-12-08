@@ -1,8 +1,8 @@
+// @dart=2.9
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/models/app_model.dart';
@@ -127,7 +127,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
     final response = await _bloc.cadastrar(context, usuario, file: this._image);
     // Se a request for bem sucedida redireciona para a Home
     if (response.ok) {
-      Snack.show("Informações atualizadas!");
+      Snack.show(context, "Informações atualizadas!");
       push(context, HomePage(), replace: true);
     } else {
       alert(context, response.msg);

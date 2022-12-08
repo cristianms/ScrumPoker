@@ -1,7 +1,7 @@
+// @dart=2.9
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scrumpoker/blocs/cadastro_bloc.dart';
 import 'package:scrumpoker/models/usuario.dart';

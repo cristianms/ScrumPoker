@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/cupertino.dart';
 import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/models/usuario.dart';

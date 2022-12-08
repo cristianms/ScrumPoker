@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -316,12 +317,12 @@ class FirebaseService {
         sala.hashsParticipantes.add(hashUsuario);
         // Atualiza a sala com o novo participante no DB
         await salasStream.doc(hashSala).set(sala.toMap());
-        Snack.show("Convite aceito com sucesso!");
+        Snack.show(context, "Convite aceito com sucesso!");
       } else {
-        Snack.show("O usuário já é um participante da sala!");
+        Snack.show(context, "O usuário já é um participante da sala!");
       }
     } else {
-      Snack.show("Nenhuma sala relacionada ao convite!");
+      Snack.show(context, "Nenhuma sala relacionada ao convite!");
     }
   }
 
