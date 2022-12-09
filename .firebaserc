@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "scrumpoker-1fa35"
-  }
+  },
+  "targets": {
+    "scrumpoker-1fa35": {
+      "hosting": {
+        "webscrumpoker": [
+          "web-scrum-poker"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
