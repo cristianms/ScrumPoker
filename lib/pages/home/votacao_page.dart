@@ -191,18 +191,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             child: Card(
               child: Column(
                 children: [
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Text(
-                        'Selecione a nota',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _tituloCard('Selecione a nota'),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -220,19 +209,8 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             child: Card(
               child: Column(
                 children: [
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Text(
-                        'Participantes em votação',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                  _gridParticipantes(salaStream),
+                  _tituloCard('Participantes em votação'),
+                  _gridParticipantesENotas(salaStream),
                 ],
               ),
             ),
@@ -244,18 +222,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             child: Card(
               child: Column(
                 children: [
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Text(
-                        'Status da votação',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _tituloCard('Status da votação'),
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Text(
@@ -293,8 +260,23 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     );
   }
 
+  Center _tituloCard(String titulo) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Text(
+          titulo,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
   /// Montagem do grid de usuários
-  Widget _gridParticipantes(Sala salaStream) {
+  Widget _gridParticipantesENotas(Sala salaStream) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -482,6 +464,8 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Montagem do componente de nota
   Widget _circularButton(int nota) {
+    final brightness = MediaQuery.of(context).platformBrightness;
+    final isDarkMode = brightness == Brightness.dark;
     return SizedBox(
       height: 70,
       width: 70,
@@ -494,9 +478,9 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             child: Text(
               nota.toString(),
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 25,
-                color: Colors.black54,
+                color: isDarkMode ? Colors.white : Colors.black54,
                 fontWeight: FontWeight.bold,
               ),
             ),
