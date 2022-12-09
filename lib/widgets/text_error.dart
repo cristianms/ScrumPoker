@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class TextError extends StatelessWidget {
   final String msg;
 
-  const TextError(this.msg, {Key? key}) : super(key: key);
+  const TextError(this.msg, {super.key});
 
   @override
   Widget build(BuildContext context) {

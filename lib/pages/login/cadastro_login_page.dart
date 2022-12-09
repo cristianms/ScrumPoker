@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:scrumpoker/blocs/cadastro_bloc.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/utils/alert.dart';
 import 'package:scrumpoker/utils/nav.dart';
@@ -38,8 +40,11 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
   // Bloc
   final _bloc = CadastroBloc();
 
+  ProviderApp providerApp;
+
   @override
   void initState() {
+    providerApp = Provider.of<ProviderApp>(context, listen: false);
     super.initState();
   }
 
@@ -58,7 +63,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             home: Scaffold(
               resizeToAvoidBottomInset: false,
               appBar: AppBar(
-                title: const Text("Cadastro"),
+                title: const Text('Cadastro'),
               ),
               body: Padding(
                 padding: const EdgeInsets.all(16),
@@ -79,15 +84,15 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
           ),
           const SizedBox(height: 5),
           const Center(
-            child: Text("Clique na imagem para adicionar uma foto (opcional)",
+            child: Text('Clique na imagem para adicionar uma foto (opcional)',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
                 )),
           ),
           AppText(
-            "Nome",
-            "Informe o seu nome",
+            'Nome',
+            'Informe o seu nome',
             controller: _tNome,
             validator: _validateNome,
             keyboardType: TextInputType.text,
@@ -97,8 +102,8 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
           ),
           const SizedBox(height: 10),
           AppText(
-            "E-mail",
-            "Informe o seu e-mail",
+            'E-mail',
+            'Informe o seu e-mail',
             controller: _tEmail,
             validator: _validateLogin,
             keyboardType: TextInputType.emailAddress,
@@ -108,8 +113,8 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
           ),
           const SizedBox(height: 10),
           AppText(
-            "Senha",
-            "Digite a senha",
+            'Senha',
+            'Digite a senha',
             controller: _tSenha,
             password: true,
             validator: _validateSenha,
@@ -123,7 +128,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
               initialData: false,
               builder: (context, snapshot) {
                 return AppButton(
-                  "Cadastrar",
+                  'Cadastrar',
                   onPressed: () => _onClickCadastrar(context),
                   showProgress: snapshot.data,
                 );
@@ -139,7 +144,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             //   color: Colors.white,
             child: TextButton(
               child: const Text(
-                "Cancelar",
+                'Cancelar',
                 style: TextStyle(
                   color: Colors.blue,
                   fontSize: 22,
@@ -157,24 +162,24 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
 
   String _validateNome(String text) {
     if (text.isEmpty) {
-      return "Informe o nome";
+      return 'Informe o nome';
     }
     return null;
   }
 
   String _validateLogin(String text) {
     if (text.isEmpty) {
-      return "Informe o e-mail";
+      return 'Informe o e-mail';
     }
     return null;
   }
 
   String _validateSenha(String text) {
     if (text.isEmpty) {
-      return "Informe a senha";
+      return 'Informe a senha';
     }
     if (text.length <= 2) {
-      return "Senha precisa ter mais de 2 números";
+      return 'Senha precisa ter mais de 2 números';
     }
     return null;
   }
@@ -195,7 +200,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
       email: email,
       senha: senha,
     );
-    final response = await _bloc.inserir(context, usuario, file: _image);
+    final response = await _bloc.inserir(context, usuario, providerApp, file: _image);
     if (response.ok) {
       push(context, const HomePage(), replace: true);
     } else {

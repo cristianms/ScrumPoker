@@ -47,7 +47,6 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _listaSalas(BuildContext context, Usuario usuario) {
     // Monta lista de acordo com o stream da coleção de salas
     return StreamBuilder<QuerySnapshot>(
-      // Busca todas as salas por enquanto, depois vejo como melhorar
       stream: FirebaseService()
           .salasStream
           .where(
@@ -58,7 +57,7 @@ class _DashboardPageState extends State<DashboardPage> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const TextError("Não foi possível buscar as salas");
+          return const TextError('Não foi possível buscar as salas');
         }
         if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
           return const MensagemNenhumaSala();
@@ -163,13 +162,13 @@ class CardSalaDashboard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                sala.descricao ?? "Sem título",
+                sala.descricao ?? 'Sem título',
                 style: const TextStyle(
                   fontSize: 25,
                 ),
               ),
               Text(
-                "\n${sala.hashsParticipantes.length} participante(s)",
+                '\n${sala.hashsParticipantes.length} participante(s)',
                 style: const TextStyle(
                   fontSize: 15,
                   color: Colors.grey,

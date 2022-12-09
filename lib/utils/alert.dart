@@ -9,12 +9,12 @@ alert(BuildContext context, String msg, {Function? callback}) {
       return WillPopScope(
         onWillPop: () async => false,
         child: AlertDialog(
-          title: const Text("ScrumPoker"),
+          title: const Text('ScrumPoker'),
           content: Text(msg),
           actions: <Widget>[
             // FlatButton(
             TextButton(
-              child: const Text("OK"),
+              child: const Text('OK'),
               onPressed: () {
                 pop(context);
                 if (callback != null) {

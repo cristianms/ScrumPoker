@@ -43,9 +43,12 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   /// Objeto bloc para controle da ação 'Cadastrar'
   final _bloc = CadastroBloc();
 
+  ProviderApp providerApp;
+
   /// Inicializa estado
   @override
   void initState() {
+    providerApp = Provider.of<ProviderApp>(context, listen: false);
     super.initState();
   }
 
@@ -68,7 +71,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
           const SizedBox(height: 5),
           const Center(
             child: Text(
-              "Clique na imagem para atualizar a foto (opcional)",
+              'Clique na imagem para atualizar a foto (opcional)',
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 12,
@@ -76,8 +79,8 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             ),
           ),
           AppText(
-            "Nome",
-            "Informe o seu nome",
+            'Nome',
+            'Informe o seu nome',
             controller: _tNome,
             validator: _validateNome,
             keyboardType: TextInputType.text,
@@ -85,8 +88,8 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
           ),
           const SizedBox(height: 10),
           AppText(
-            "E-mail",
-            "Não é possível alterar o e-mail",
+            'E-mail',
+            'Não é possível alterar o e-mail',
             controller: _tEmail,
             enable: false,
           ),
@@ -96,7 +99,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             initialData: false,
             builder: (context, snapshot) {
               return AppButton(
-                "Cadastrar",
+                'Cadastrar',
                 onPressed: () => _onClickCadastrar(context),
                 showProgress: snapshot.data,
               );
@@ -110,7 +113,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   // Validador do campo Nome
   String _validateNome(String text) {
     if (text.isEmpty) {
-      return "Informe o nome";
+      return 'Informe o nome';
     }
     return null;
   }
@@ -126,10 +129,10 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
       nome: _tNome.text.trim(),
       email: _tEmail.text.trim(),
     );
-    final response = await _bloc.cadastrar(context, usuario, file: _image);
+    final response = await _bloc.cadastrar(context, usuario, providerApp, file: _image);
     // Se a request for bem sucedida redireciona para a Home
     if (response.ok) {
-      Snack.show(context, "Informações atualizadas!");
+      Snack.show(context, 'Informações atualizadas!');
       push(context, const HomePage(), replace: true);
     } else {
       alert(context, response.msg);
@@ -172,7 +175,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
                       ? FileImage(_image)
                       : (url != null
                           ? CachedNetworkImageProvider(url)
-                          : const AssetImage("assets/imagens/camera.png"))),
+                          : const AssetImage('assets/imagens/camera.png'))),
             ),
           ),
         ],

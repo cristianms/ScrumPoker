@@ -58,7 +58,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
       _tDescricao.text = sala.descricao;
     }
 
-    var tituloAppBar = widget.snapshotSala != null ? "Sala: ${sala.descricao}" : "Nova sala";
+    var tituloAppBar = widget.snapshotSala != null ? 'Sala: ${sala.descricao}' : 'Nova sala';
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -112,8 +112,8 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
       child: ListView(
         children: <Widget>[
           AppText(
-            "Sala",
-            "Informe o nome da sala",
+            'Sala',
+            'Informe o nome da sala',
             controller: _tDescricao,
             validator: _validateDescricao,
             keyboardType: TextInputType.text,
@@ -157,7 +157,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
 
   String _validateDescricao(String text) {
     if (text.isEmpty) {
-      return "Informe o nome da sala";
+      return 'Informe o nome da sala';
     }
     return null;
   }
@@ -185,7 +185,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
     );
     if (response.ok) {
       pop(context);
-      Snack.show(context, "Dados cadastrados!");
+      Snack.show(context, 'Dados cadastrados!');
     }
   }
 }

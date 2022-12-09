@@ -23,11 +23,10 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-
-    // Delay de 3 segundos
-    Future futureDelay = Future.delayed(const Duration(seconds: 1));
+    // Delay de 1 segundo
+    final futureDelay = Future.delayed(const Duration(seconds: 1));
     // Autenticação no Firebase
-    User firebaseUser = FirebaseAuth.instance.currentUser;
+    final firebaseUser = FirebaseAuth.instance.currentUser;
     // Quando todas as future terminarem faz a validação
     Future.wait([futureDelay]).then((List values) {
       // Retorno da future que recupera o usuário autenticado

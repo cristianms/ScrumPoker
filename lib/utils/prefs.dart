@@ -31,7 +31,7 @@ class Prefs {
   static Future<String> getString(String key) async {
     var prefs = await SharedPreferences.getInstance();
 
-    return prefs.getString(key) ?? "";
+    return prefs.getString(key) ?? '';
   }
 
   static void setString(String key, String s) async {

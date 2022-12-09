@@ -3,7 +3,9 @@ import 'dart:async';
 
 import 'package:auth_buttons/auth_buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:scrumpoker/blocs/login_bloc.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/pages/login/cadastro_login_page.dart';
 import 'package:scrumpoker/utils/alert.dart';
@@ -34,7 +36,6 @@ class _LoginPageState extends State<LoginPage> {
   final tSenha = TextEditingController();
 
   /// Define foco no campo senha
-  /// final _focusLogin = FocusNode();
   final _focusSenha = FocusNode();
 
   /// Bloc
@@ -43,10 +44,13 @@ class _LoginPageState extends State<LoginPage> {
   /// StreamController para a autenticação do Google
   final _streamControllerGoogleSigIn = StreamController<bool>();
 
+  ProviderApp providerApp;
+
   @override
   void initState() {
-    super.initState();
     _streamControllerGoogleSigIn.add(false);
+    providerApp = Provider.of<ProviderApp>(context, listen: false);
+    super.initState();
   }
 
   @override
@@ -71,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: const Text("Scrum Poker"),
+          title: const Text('Scrum Poker'),
         ),
         body: _body(brightness),
       ),
@@ -89,8 +93,8 @@ class _LoginPageState extends State<LoginPage> {
             const FlutterLogo(size: 70),
             const SizedBox(height: 20),
             AppText(
-              "Login",
-              "Digite o login",
+              'Login',
+              'Digite o login',
               controller: tLogin,
               validator: _validateLogin,
               keyboardType: TextInputType.emailAddress,
@@ -100,8 +104,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 10),
             AppText(
-              "Senha",
-              "Digite a senha",
+              'Senha',
+              'Digite a senha',
               controller: tSenha,
               password: true,
               validator: _validateSenha,
@@ -116,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                 initialData: false,
                 builder: (context, snapshot) {
                   return AppButton(
-                    "Login",
+                    'Login',
                     onPressed: _onClickLogin,
                     showProgress: snapshot.data,
                   );
@@ -146,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
               child: InkWell(
                 onTap: _onClickCadastrar,
                 child: const Text(
-                  "Não possui conta? Cadastre-se aqui",
+                  'Não possui conta? Cadastre-se aqui',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18, color: Colors.blue, decoration: TextDecoration.underline),
                 ),
@@ -169,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
       email: email,
       senha: senha,
     );
-    ApiResponse response = await _bloc.login(context, usuarioLogin);
+    ApiResponse response = await _bloc.login(context, usuarioLogin, providerApp);
     if (response.ok) {
       if (mounted) {
         push(context, const HomePage(), replace: true);
@@ -183,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
 
   _onClickLoginGoogle(BuildContext context) async {
     _streamControllerGoogleSigIn.add(true);
-    ApiResponse response = await _bloc.loginGoogle(context);
+    ApiResponse response = await _bloc.loginGoogle(context, providerApp);
     if (response.ok) {
       if (mounted) {
         push(context, const HomePage(), replace: true);
@@ -203,17 +207,17 @@ class _LoginPageState extends State<LoginPage> {
 
   String _validateLogin(String value) {
     if (value.isEmpty) {
-      return "Digite o texto";
+      return 'Digite o texto';
     }
     return null;
   }
 
   String _validateSenha(String value) {
     if (value.isEmpty) {
-      return "Digite o texto";
+      return 'Digite o texto';
     }
     if (value.length < 6) {
-      return "A senha deve conter pelo menos 6 dígitos. Verifique";
+      return 'A senha deve conter pelo menos 6 dígitos. Verifique';
     }
     return null;
   }

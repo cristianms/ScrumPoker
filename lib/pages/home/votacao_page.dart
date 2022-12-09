@@ -66,9 +66,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(sala),
-      body:
-          // Utiliza o stream de sala para ter acesso a sala em tempo real, para obter a prop "votacaoEncerrada"
-          StreamBuilder(
+      body: StreamBuilder(
         stream: FirebaseService().salasStream.doc(widget.snapshotSala.id).snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           Sala salaStream = Sala(descricao: '...');
@@ -96,11 +94,9 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   }
 
   /// Monta a AppBar
-  _appBar(Sala salaStream) {
+  Widget _appBar(Sala salaStream) {
     if (salaStream == null) {
-      return AppBar(
-        title: const Text('Sala excluída'),
-      );
+      return AppBar(title: const Text('Sala excluída'));
     }
     return AppBar(
       title: Text('Votação - ${salaStream.descricao}'),
@@ -153,19 +149,14 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
         }
         break;
       case 'editarSala':
-        push(
-          context,
-          CadastroSalaPage(
-            snapshotSala: widget.snapshotSala,
-          ),
-        );
+        push(context, CadastroSalaPage(snapshotSala: widget.snapshotSala));
         break;
       case 'apagarSala':
         final response = await FirebaseService().deletar(context, widget.snapshotSala?.id);
         if (response.ok) {
           if (mounted) {
             pop(context);
-            Snack.show(context, "Sala excluída");
+            Snack.show(context, 'Sala excluída');
           }
         }
         break;
@@ -173,7 +164,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   }
 
   /// Monta esqueleto da tela (3 grids)
-  _body(BuildContext context, Sala salaStream) {
+  Widget _body(BuildContext context, Sala salaStream) {
     if (statusStream == StatusStream.carregando) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -188,7 +179,10 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     }
     // return Center(child: Text('A sala pode ter sido excluída'));
     return WillPopScope(
-      onWillPop: () => _sairVotacao(context, widget.snapshotSala.id, usuario.hash),
+      onWillPop: () async {
+        await _sairVotacao(context, widget.snapshotSala.id, usuario.hash);
+        return true;
+      },
       child: Column(
         children: [
           // Grid de notas
@@ -311,13 +305,13 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             if (!snapshot.hasData) {
               return const Padding(
                 padding: EdgeInsets.all(16.0),
-                child: TextError("Nenhum registro encontrado até o momento"),
+                child: TextError('Nenhum registro encontrado até o momento'),
               );
             }
             if (snapshot.hasError) {
               return const Padding(
                 padding: EdgeInsets.all(16.0),
-                child: TextError("Não foi possível buscar os dados"),
+                child: TextError('Não foi possível buscar os dados'),
               );
             }
             // Obtém a lista de snapshots de votacões
@@ -362,7 +356,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
         if (snapshot.hasError) {
           return const Padding(
             padding: EdgeInsets.all(16.0),
-            child: TextError("Não foi possível buscar os dados"),
+            child: TextError('Não foi possível buscar os dados'),
           );
         }
         Usuario usuario = Usuario.fromMap(snapshot.data.data());
@@ -386,7 +380,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                                 backgroundImage: NetworkImage(usuario.urlFoto),
                                 backgroundColor: Colors.transparent,
                               )
-                            : Image.asset("assets/imagens/usuario.png"),
+                            : Image.asset('assets/imagens/usuario.png'),
                       ),
                       Positioned(
                         bottom: 0,
@@ -421,23 +415,26 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   void _dialogRemoverParticipante(BuildContext context, Usuario usuario) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Remover ${usuario.nome}'),
-          content: const SingleChildScrollView(
-            child: Text('Tem certeza que deseja removê-lo?'),
+          title: const Text('Remover particopante'),
+          content: SingleChildScrollView(
+            child: Text('Tem certeza que deseja remover ${usuario.nome} da sala?'),
           ),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),
               onPressed: () {
-                Navigator.of(context).pop();
+                pop(context);
               },
             ),
             TextButton(
               child: const Text('Removê-lo'),
-              onPressed: () => FirebaseService().excluirVotacao(widget.snapshotSala.id, usuario.hash),
+              onPressed: () {
+                FirebaseService().excluirVotacao(widget.snapshotSala.id, usuario.hash);
+                pop(context);
+              },
             ),
           ],
         );

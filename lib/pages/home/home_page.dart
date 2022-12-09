@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               usuario != null ? _header(context, usuario) : Container(),
               ListTile(
                 leading: const Icon(Icons.home),
-                title: const Text("Home"),
+                title: const Text('Home'),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ),
               ListTile(
                 leading: const Icon(Icons.person),
-                title: const Text("Meus dados"),
+                title: const Text('Meus dados'),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.exit_to_app),
-                title: const Text("Logout"),
+                title: const Text('Logout'),
                 onTap: () => _onClickLogout(context),
               ),
             ],
@@ -178,8 +178,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             child: ListBody(
               children: <Widget>[
                 AppText(
-                  "Código de sala",
-                  "Informe o seu código",
+                  'Código de sala',
+                  'Informe o seu código',
                   controller: _controllerCodConvite,
                   keyboardType: TextInputType.text,
                   action: TextInputAction.done,
@@ -209,12 +209,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     var codigoConvite = _controllerCodConvite.text;
     if (codigoConvite.isNotEmpty) {
       final usuarioLogado = Provider.of<ProviderApp>(context, listen: false).usuario;
-      await FirebaseService().utilizarConvite(context, codigoConvite, usuarioLogado.hash);
+      final statusConvite = await FirebaseService().utilizarConvite(context, codigoConvite, usuarioLogado.hash);
       if (mounted) {
+        Snack.show(context, statusConvite.mensagem);
         pop(context);
       }
     } else {
-      Snack.show(context, "Convite inválido!");
+      Snack.show(context, 'Convite inválido!');
     }
   }
 
@@ -228,7 +229,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               // backgroundImage: NetworkImage(usuario.photoUrl),
               backgroundImage: CachedNetworkImageProvider(usuario.urlFoto),
             )
-          : Image.asset("assets/imagens/usuario.png"),
+          : Image.asset('assets/imagens/usuario.png'),
     );
   }
 
