@@ -1,6 +1,6 @@
 name: scrumpoker
-description: Scrum Poker
-version: 1.0.0+1
+description: ScrumPoker
+version: 1.0.1+2
 environment:
   sdk: ">=2.17.0 <3.0.0"
 dependencies:
@@ -26,16 +26,18 @@ dependencies:
   flutter_speed_dial: ^6.2.0
   google_sign_in_web: ^0.10.2
   flutter_native_splash: ^2.2.16
+  flutter_launcher_icons: ^0.11.0
 dev_dependencies:
   flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
-# dependency_overrides:
-#   platform: ^3.1.0
+
 flutter:
   uses-material-design: true
   assets:
     - assets/imagens/
+    - assets/imagens/scrumpoker_icon.png
+    - assets/imagens/scrumpoker_icon_grande.png
   fonts:
     - family: Pacifico
       fonts:
@@ -57,5 +59,24 @@ flutter:
           weight: 700
 
 flutter_native_splash:
-  color: "#42a5f5"
-  background_image: "assets/imagens/scrumpoker.svg"
+  image: "assets/imagens/scrumpoker_icon_grande.png"
+  color: "ffffff"
+  android_disable_fullscreen: true
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/imagens/scrumpoker_icon_grande.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "path/to/image.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/imagens/scrumpoker_icon_grande.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/imagens/scrumpoker_icon_grande.png"

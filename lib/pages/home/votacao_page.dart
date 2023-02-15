@@ -51,6 +51,8 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   /// Usuario logado
   var statusStream = StatusStream.carregando;
 
+  var isDarkMode = false;
+
   @override
   void initState() {
     super.initState();
@@ -400,7 +402,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Remover particopante'),
+          title: const Text('Remover participante'),
           content: SingleChildScrollView(
             child: Text('Tem certeza que deseja remover ${usuario.nome} da sala?'),
           ),
@@ -464,8 +466,6 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Montagem do componente de nota
   Widget _circularButton(int nota) {
-    final brightness = MediaQuery.of(context).platformBrightness;
-    final isDarkMode = brightness == Brightness.dark;
     return SizedBox(
       height: 70,
       width: 70,

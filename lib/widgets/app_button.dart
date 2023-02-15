@@ -1,5 +1,6 @@
 // @dart=2.9
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppButton extends StatelessWidget {
   final String label;
@@ -15,6 +16,7 @@ class AppButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(10),
         shadowColor: Colors.blue,
+        minimumSize: kIsWeb ? const Size(10, 60) : null,
       ),
       // color: Colors.blue,
       onPressed: disabled == false ? onPressed : null,

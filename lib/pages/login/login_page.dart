@@ -13,6 +13,7 @@ import 'package:scrumpoker/utils/api_response.dart';
 import 'package:scrumpoker/utils/nav.dart';
 import 'package:scrumpoker/widgets/app_button.dart';
 import 'package:scrumpoker/widgets/app_text.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../home/home_page.dart';
 
@@ -63,8 +64,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     tLogin.text = '';
     tSenha.text = '';
-    // tLogin.text = 'cristian@gmail.com';
-    // tSenha.text = '123456';
 
     // Obtém o modo de brilho (escuro/claro)
     var brightness = MediaQuery.of(context).platformBrightness;
@@ -74,89 +73,97 @@ class _LoginPageState extends State<LoginPage> {
       darkTheme: ThemeData.dark(),
       home: Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          title: const Text('Scrum Poker'),
-        ),
         body: _body(brightness),
       ),
     );
   }
 
   _body(brightness) {
-    return Form(
-      key: _formkey,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: <Widget>[
-            const SizedBox(height: 20),
-            const FlutterLogo(size: 70),
-            const SizedBox(height: 20),
-            AppText(
-              'Login',
-              'Digite o login',
-              controller: tLogin,
-              validator: _validateLogin,
-              keyboardType: TextInputType.emailAddress,
-              action: TextInputAction.next,
-              nextFocus: _focusSenha,
-              autoFocus: true,
-            ),
-            const SizedBox(height: 10),
-            AppText(
-              'Senha',
-              'Digite a senha',
-              controller: tSenha,
-              password: true,
-              validator: _validateSenha,
-              keyboardType: TextInputType.visiblePassword,
-              action: TextInputAction.done,
-              focusNode: _focusSenha,
-            ),
-            const SizedBox(height: 10),
-            // Validar login
-            StreamBuilder<bool>(
-                stream: _bloc.stream,
+    return Center(
+      child: Form(
+        key: _formkey,
+        child: Container(
+          width: kIsWeb ? 500 : null,
+          padding: const EdgeInsets.fromLTRB(16, 80, 16, 16),
+          child: ListView(
+            children: <Widget>[
+              const SizedBox(height: 20),
+              //const FlutterLogo(size: 70),
+              Image.asset(
+                'assets/imagens/scrumpoker_icon.png',
+                height: 130,
+              ),
+              const SizedBox(height: 20),
+              AppText(
+                'Login',
+                'Digite o login',
+                controller: tLogin,
+                validator: _validateLogin,
+                keyboardType: TextInputType.emailAddress,
+                action: TextInputAction.next,
+                nextFocus: _focusSenha,
+                autoFocus: true,
+              ),
+              const SizedBox(height: 10),
+              AppText(
+                'Senha',
+                'Digite a senha',
+                controller: tSenha,
+                password: true,
+                validator: _validateSenha,
+                keyboardType: TextInputType.visiblePassword,
+                action: TextInputAction.done,
+                focusNode: _focusSenha,
+              ),
+              const SizedBox(height: 10),
+              // Validar login
+              StreamBuilder<bool>(
+                  stream: _bloc.stream,
+                  initialData: false,
+                  builder: (context, snapshot) {
+                    return AppButton(
+                      'Login',
+                      onPressed: _onClickLogin,
+                      showProgress: snapshot.data,
+                    );
+                  }),
+              const SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
+              // Entrar com conta Google
+              StreamBuilder<bool>(
+                stream: _streamControllerGoogleSigIn.stream,
                 initialData: false,
                 builder: (context, snapshot) {
-                  return AppButton(
-                    'Login',
-                    onPressed: _onClickLogin,
-                    showProgress: snapshot.data,
-                  );
-                }),
-            const SizedBox(height: 10),
-            const Divider(),
-            const SizedBox(height: 10),
-            // Entrar com conta Google
-            StreamBuilder<bool>(
-              stream: _streamControllerGoogleSigIn.stream,
-              initialData: false,
-              builder: (context, snapshot) {
-                if (snapshot.data == false) {
-                  return GoogleAuthButton(
-                    onPressed: () => _onClickLoginGoogle(context),
-                  );
-                }
-                return const Center(child: CircularProgressIndicator());
-              },
-            ),
-            const SizedBox(height: 10),
+                  if (snapshot.data == false) {
+                    return GoogleAuthButton(
+                      style: const AuthButtonStyle(
+                        height: kIsWeb ? 60 : null,
+                      ),
+                      text: 'Logar com Google',
+                      onPressed: () => _onClickLoginGoogle(context),
+                    );
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
+              const SizedBox(height: 10),
 
-            /// Novo cadastro
-            Container(
-              height: 46,
-              margin: const EdgeInsets.only(top: 0),
-              child: InkWell(
-                onTap: _onClickCadastrar,
-                child: const Text(
-                  'Não possui conta? Cadastre-se aqui',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.blue, decoration: TextDecoration.underline),
+              /// Novo cadastro
+              Container(
+                height: 46,
+                margin: const EdgeInsets.only(top: 0),
+                child: InkWell(
+                  onTap: _onClickCadastrar,
+                  child: const Text(
+                    'Ou cadastre-se aqui',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 18, color: Colors.blue),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -24,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     // Delay de 1 segundo
-    final futureDelay = Future.delayed(const Duration(seconds: 1));
+    final futureDelay = Future.delayed(const Duration(seconds: 2));
     // Autenticação no Firebase
     final firebaseUser = FirebaseAuth.instance.currentUser;
     // Quando todas as future terminarem faz a validação
@@ -32,9 +32,7 @@ class _SplashPageState extends State<SplashPage> {
       // Retorno da future que recupera o usuário autenticado
       if (firebaseUser != null) {
         // Tenta encontrar o usuário logado no banco de dados
-        firebaseService
-            .getUsuarioCollectionByHash(firebaseUser.uid)
-            .then((Usuario usuario) => verificaUsuario(usuario));
+        firebaseService.getUsuarioCollectionByHash(firebaseUser.uid).then((Usuario usuario) => verificaUsuario(usuario));
       } else {
         push(context, const LoginPage(), replace: true);
       }
@@ -56,10 +54,11 @@ class _SplashPageState extends State<SplashPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: const <Widget>[
+      children: <Widget>[
         Center(
-          child: FlutterLogo(
-            size: 150,
+          child: Image.asset(
+            'assets/imagens/scrumpoker_icon.png',
+            height: 290,
           ),
         ),
       ],
