@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'dart:convert';
 
 class Votacao {
@@ -48,13 +49,13 @@ class Votacao {
   String toString() => 'Votacao(hashSala: $hashSala, hashUsuario: $hashUsuario, nota: $nota)';
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
   
-    return o is Votacao &&
-      o.hashSala == hashSala &&
-      o.hashUsuario == hashUsuario &&
-      o.nota == nota;
+    return other is Votacao &&
+      other.hashSala == hashSala &&
+      other.hashUsuario == hashUsuario &&
+      other.nota == nota;
   }
 
   @override

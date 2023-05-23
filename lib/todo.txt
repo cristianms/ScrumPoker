@@ -19,7 +19,7 @@
       - OK - Clicar em sair <-
       - .. - Encerrar o app --- Não e possivel
 
-- .. - Gerar numero para criacao de convite para a sala
+- OK - Gerar numero para criacao de convite para a sala
   - .. - 6 digitos
 
 - .. - Funcionalidade de exclusao de usuário da sala

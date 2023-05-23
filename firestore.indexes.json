@@ -1,0 +1,33 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "salas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "hashCriador",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "descricao",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "salas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "hashsParticipantes",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "descricao",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

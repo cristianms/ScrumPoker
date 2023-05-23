@@ -39,6 +39,17 @@ Documentação Flutter:
 Para executar o projeto é necessário fazer o processo de criação e vinculação do aplicativo com o Firebase. O Firebase disponibiliza a [documentação necessária](https://firebase.google.com/docs/flutter/setup?hl=pt&platform=Android) para esses passos.
 Caso tenha dúvidas não deixe de entrar em contato.
 
+#### Deploy WEB
+Após já ter realizado login e configurado um projeto WEB, executar os comandos:
+1º executar o build
+```dart
+flutter build web
+```
+2º executar o deploy
+```dart
+firebase deploy
+```
+
 ## MIT
 ### The MIT License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  

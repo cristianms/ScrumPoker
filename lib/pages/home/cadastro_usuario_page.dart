@@ -1,11 +1,11 @@
+// @dart=2.9
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:scrumpoker/models/app_model.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/blocs/cadastro_bloc.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/pages/home/home_page.dart';
@@ -18,8 +18,10 @@ import 'package:scrumpoker/widgets/app_text.dart';
 
 /// Widget que representa o formulário de alteração de dados interno
 class CadastroUsuarioPage extends StatefulWidget {
+  const CadastroUsuarioPage({Key key}) : super(key: key);
+
   @override
-  _CadastroUsuarioPageState createState() => _CadastroUsuarioPageState();
+  State<CadastroUsuarioPage> createState() => _CadastroUsuarioPageState();
 }
 
 class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
@@ -41,19 +43,22 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   /// Objeto bloc para controle da ação 'Cadastrar'
   final _bloc = CadastroBloc();
 
+  ProviderApp providerApp;
+
   /// Inicializa estado
   @override
   void initState() {
+    providerApp = Provider.of<ProviderApp>(context, listen: false);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    Usuario usuario = Provider.of<AppModel>(context, listen: false).usuario;
+    Usuario usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
 
     // Preenche os campos do formulário
-    this._tNome.text = usuario.nome;
-    this._tEmail.text = usuario.email;
+    _tNome.text = usuario.nome;
+    _tEmail.text = usuario.email;
 
     return Form(
       key: _formKey,
@@ -63,10 +68,10 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             child: _getCircleAvatar(usuario.urlFoto),
             onTap: () => _tirarFotoReduzida(),
           ),
-          SizedBox(height: 5),
-          Center(
+          const SizedBox(height: 5),
+          const Center(
             child: Text(
-              "Clique na imagem para atualizar a foto (opcional)",
+              'Clique na imagem para atualizar a foto (opcional)',
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 12,
@@ -74,27 +79,27 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             ),
           ),
           AppText(
-            "Nome",
-            "Informe o seu nome",
+            'Nome',
+            'Informe o seu nome',
             controller: _tNome,
             validator: _validateNome,
             keyboardType: TextInputType.text,
             action: TextInputAction.next,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           AppText(
-            "E-mail",
-            "Não é possível alterar o e-mail",
+            'E-mail',
+            'Não é possível alterar o e-mail',
             controller: _tEmail,
             enable: false,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           StreamBuilder<bool>(
             stream: _bloc.stream,
             initialData: false,
             builder: (context, snapshot) {
               return AppButton(
-                "Cadastrar",
+                'Cadastrar',
                 onPressed: () => _onClickCadastrar(context),
                 showProgress: snapshot.data,
               );
@@ -108,7 +113,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   // Validador do campo Nome
   String _validateNome(String text) {
     if (text.isEmpty) {
-      return "Informe o nome";
+      return 'Informe o nome';
     }
     return null;
   }
@@ -124,11 +129,11 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
       nome: _tNome.text.trim(),
       email: _tEmail.text.trim(),
     );
-    final response = await _bloc.cadastrar(context, usuario, file: this._image);
+    final response = await _bloc.cadastrar(context, usuario, providerApp, file: _image);
     // Se a request for bem sucedida redireciona para a Home
     if (response.ok) {
-      Snack.show("Informações atualizadas!");
-      push(context, HomePage(), replace: true);
+      Snack.show(context, 'Informações atualizadas!');
+      push(context, const HomePage(), replace: true);
     } else {
       alert(context, response.msg);
     }
@@ -142,7 +147,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
         maxWidth: 300);
     setState(() {
       // print()
-      this._image = File(pickedFile.path);
+      _image = File(pickedFile.path);
 
 //      final bytes = File(pickedFile.path).readAsBytesSync();
 //      ImagemUtils.saveImageToPrefs(base64Encode(bytes));
@@ -161,16 +166,16 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-              shape: this._image != null || url != null
+              shape: _image != null || url != null
                   ? BoxShape.circle
                   : BoxShape.rectangle,
-              image: new DecorationImage(
+              image: DecorationImage(
                   fit: BoxFit.fill,
-                  image: this._image != null
-                      ? FileImage(this._image)
+                  image: _image != null
+                      ? FileImage(_image)
                       : (url != null
                           ? CachedNetworkImageProvider(url)
-                          : AssetImage("assets/imagens/camera.png"))),
+                          : const AssetImage('assets/imagens/camera.png'))),
             ),
           ),
         ],

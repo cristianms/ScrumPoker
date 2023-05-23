@@ -1,6 +1,6 @@
 import 'dart:async';
 
-class SimpleBloc<T> {
+class SimpleBloc<T extends Object>{
 
   final _controller = StreamController<T>();
 

@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
 
 class AppText extends StatelessWidget {
@@ -13,9 +14,9 @@ class AppText extends StatelessWidget {
   final FocusNode nextFocus;
   final bool enable;
 
-  AppText(
+  const AppText(
     this.label,
-    this.hint, {
+    this.hint, {Key key, 
     this.controller,
     this.password = false,
     this.validator,
@@ -25,7 +26,7 @@ class AppText extends StatelessWidget {
     this.focusNode,
     this.nextFocus,
     this.enable,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class AppText extends StatelessWidget {
       validator: validator,
       keyboardType: keyboardType,
       textInputAction: action,
-      autofocus: autoFocus != null ? autoFocus : false,
+      autofocus: autoFocus ?? false,
       focusNode: focusNode,
       enabled: enable,
       onFieldSubmitted: (String text) {
@@ -43,13 +44,13 @@ class AppText extends StatelessWidget {
           FocusScope.of(context).requestFocus(nextFocus);
         }
       },
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 20,
         color: Colors.blue,
       ),
       decoration: InputDecoration(
 //          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           fontSize: 20,
           color: Colors.grey,
         ),

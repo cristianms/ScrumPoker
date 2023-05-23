@@ -1,3 +1,4 @@
+// @dart=2.9
 import 'package:flutter/material.dart';
 
 class AppCircularButton extends StatelessWidget {
@@ -5,25 +6,25 @@ class AppCircularButton extends StatelessWidget {
   final Function onPressed;
   final bool showProgress;
 
-  AppCircularButton(this.label, {this.onPressed, this.showProgress = false});
+  const AppCircularButton(this.label, {Key key, this.onPressed, this.showProgress = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return RawMaterialButton(
       onPressed: onPressed,
-      constraints: BoxConstraints(),
+      constraints: const BoxConstraints(),
       elevation: 2.0,
       fillColor: Colors.blue[300],
-      padding: EdgeInsets.all(10.0),
-      shape: CircleBorder(),
+      padding: const EdgeInsets.all(10.0),
+      shape: const CircleBorder(),
       child: showProgress
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ))
           : Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 25,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
