@@ -20,13 +20,13 @@
       - .. - Encerrar o app --- Não e possivel
 
 - OK - Gerar numero para criacao de convite para a sala
-  - .. - 6 digitos
+  - OK - 6 digitos
 
-- .. - Funcionalidade de exclusao de usuário da sala
+- OK - Funcionalidade de exclusao de usuário da sala
 
-- .. - Funcionalidade de exclusao de sala
+- OK - Funcionalidade de exclusao de sala
 
-- .. - Quando uma sala for removida, remover todos os registros de votacao ativos dela
-  - .. - Nesse momento quem estiver votando nela deve ser redirecionado para a Home, se possivel apresentar uma mensagem
+- OK - Quando uma sala for removida, remover todos os registros de votacao ativos dela
+  - OK - Nesse momento quem estiver votando nela deve ser redirecionado para a Home, se possivel apresentar uma mensagem
 
-- .. - Ajustar snackbar
+- OK - Ajustar snackbar
