@@ -2,7 +2,7 @@ name: scrumpoker
 description: ScrumPoker
 version: 1.0.1+2
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 dependencies:
   flutter:
     sdk: flutter
@@ -18,8 +18,8 @@ dependencies:
   cloud_firestore: ^4.1.0
   image_picker: ^0.7.3
   provider: ^5.0.0
-  responsive_grid: ^1.2.1+1
-  cached_network_image: ^2.3.3
+  responsive_grid: ^2.2.0
+  cached_network_image: ^3.2.3
   auth_buttons: ^3.0.0
   share_plus: ^6.3.0
   clipboard: ^0.1.3
