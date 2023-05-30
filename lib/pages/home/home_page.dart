@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -15,7 +14,7 @@ import 'package:scrumpoker/widgets/app_text.dart';
 import 'cadastro_sala_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -23,10 +22,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin<HomePage> {
   /// Página selecionada no menu lateral
-  int selectedIndex;
+  late int selectedIndex;
 
   /// Usuario logado
-  Usuario usuario;
+  late Usuario usuario;
 
   /// Campo de código de convite
   final _controllerCodConvite = TextEditingController();
@@ -104,7 +103,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           key: scaffoldKey,
           child: ListView(
             children: <Widget>[
-              usuario != null ? _header(context, usuario) : Container(),
+              _header(context, usuario),
               ListTile(
                 leading: const Icon(Icons.home),
                 title: const Text('Home'),
@@ -209,7 +208,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     var codigoConvite = _controllerCodConvite.text;
     if (codigoConvite.isNotEmpty) {
       final usuarioLogado = Provider.of<ProviderApp>(context, listen: false).usuario;
-      final statusConvite = await FirebaseService().utilizarConvite(context, codigoConvite, usuarioLogado.hash);
+      final statusConvite = await FirebaseService().utilizarConvite(context, codigoConvite, usuarioLogado.hash!);
       if (mounted) {
         Snack.show(context, statusConvite.mensagem);
         pop(context);
@@ -227,7 +226,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       currentAccountPicture: usuario.urlFoto != null
           ? CircleAvatar(
               // backgroundImage: NetworkImage(usuario.photoUrl),
-              backgroundImage: CachedNetworkImageProvider(usuario.urlFoto),
+              backgroundImage: CachedNetworkImageProvider(usuario.urlFoto!),
             )
           : Image.asset('assets/imagens/usuario.png'),
     );

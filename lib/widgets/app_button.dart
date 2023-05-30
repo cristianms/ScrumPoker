@@ -1,14 +1,20 @@
-// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AppButton extends StatelessWidget {
   final String label;
   final Function onPressed;
-  final bool showProgress;
-  final bool disabled;
+  final bool? showProgress;
+  final bool? disabled;
 
-  const AppButton(this.label, {Key key, this.onPressed, this.showProgress = false, this.disabled = false}) : super(key: key);
+  /// Construtor
+  const AppButton(
+    this.label, {
+    Key? key,
+    required this.onPressed,
+    this.showProgress = false,
+    this.disabled = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +24,8 @@ class AppButton extends StatelessWidget {
         shadowColor: Colors.blue,
         minimumSize: kIsWeb ? const Size(10, 60) : null,
       ),
-      // color: Colors.blue,
-      onPressed: disabled == false ? onPressed : null,
-      child: showProgress
+      onPressed: disabled == false ? () => onPressed() : null,
+      child: (showProgress ?? false)
           ? const Center(
               child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),

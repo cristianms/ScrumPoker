@@ -1,17 +1,16 @@
-// @dart=2.9
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
 /// Classe que representa o modelo da entidade Sala
 class Sala {
-  String descricao;
-  String hashCriador;
-  List<String> hashsParticipantes;
-  bool votacaoConcluida;
-
-  /// Construtor
+  String? hash;
+  String? descricao;
+  String? hashCriador;
+  List<String>? hashsParticipantes;
+  bool? votacaoConcluida;
   Sala({
+    this.hash,
     this.descricao,
     this.hashCriador,
     this.hashsParticipantes,
@@ -19,12 +18,14 @@ class Sala {
   });
 
   Sala copyWith({
-    String descricao,
-    String hashCriador,
-    List<String> hashsParticipantes,
-    bool votacaoConcluida,
+    String? hash,
+    String? descricao,
+    String? hashCriador,
+    List<String>? hashsParticipantes,
+    bool? votacaoConcluida,
   }) {
     return Sala(
+      hash: hash ?? this.hash,
       descricao: descricao ?? this.descricao,
       hashCriador: hashCriador ?? this.hashCriador,
       hashsParticipantes: hashsParticipantes ?? this.hashsParticipantes,
@@ -34,6 +35,7 @@ class Sala {
 
   Map<String, dynamic> toMap() {
     return {
+      'hash': hash,
       'descricao': descricao,
       'hashCriador': hashCriador,
       'hashsParticipantes': hashsParticipantes,
@@ -42,9 +44,8 @@ class Sala {
   }
 
   factory Sala.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Sala(
+      hash: map['hash'],
       descricao: map['descricao'],
       hashCriador: map['hashCriador'],
       hashsParticipantes: List<String>.from(map['hashsParticipantes']),
@@ -58,7 +59,7 @@ class Sala {
 
   @override
   String toString() {
-    return 'Sala(descricao: $descricao, hashCriador: $hashCriador, hashsParticipantes: $hashsParticipantes, votacaoConcluida: $votacaoConcluida)';
+    return 'Sala(hash: $hash, descricao: $descricao, hashCriador: $hashCriador, hashsParticipantes: $hashsParticipantes, votacaoConcluida: $votacaoConcluida)';
   }
 
   @override
@@ -66,6 +67,7 @@ class Sala {
     if (identical(this, other)) return true;
 
     return other is Sala &&
+        other.hash == hash &&
         other.descricao == descricao &&
         other.hashCriador == hashCriador &&
         listEquals(other.hashsParticipantes, hashsParticipantes) &&
@@ -74,9 +76,6 @@ class Sala {
 
   @override
   int get hashCode {
-    return descricao.hashCode ^
-        hashCriador.hashCode ^
-        hashsParticipantes.hashCode ^
-        votacaoConcluida.hashCode;
+    return hash.hashCode ^ descricao.hashCode ^ hashCriador.hashCode ^ hashsParticipantes.hashCode ^ votacaoConcluida.hashCode;
   }
 }

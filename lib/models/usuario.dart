@@ -1,12 +1,11 @@
-// @dart=2.9
 import 'dart:convert';
 
 class Usuario {
-  String hash;
-  String nome;
-  String email;
-  String urlFoto;
-  String senha;
+  String? hash;
+  String? nome;
+  String? email;
+  String? urlFoto;
+  String? senha;
   Usuario({
     this.hash,
     this.nome,
@@ -16,11 +15,11 @@ class Usuario {
   });
 
   Usuario copyWith({
-    String hash,
-    String nome,
-    String email,
-    String urlFoto,
-    String senha,
+    String? hash,
+    String? nome,
+    String? email,
+    String? urlFoto,
+    String? senha,
   }) {
     return Usuario(
       hash: hash ?? this.hash,
@@ -51,8 +50,6 @@ class Usuario {
   }
 
   factory Usuario.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-  
     return Usuario(
       hash: map['hash'],
       nome: map['nome'],

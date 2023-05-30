@@ -1,8 +1,6 @@
-// @dart=2.9
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -40,11 +38,11 @@ class FirebaseService {
   CollectionReference get usuariosStream => FirebaseFirestore.instance.collection('usuarios');
 
   /// Obtém o usuário da collection/banco de dados através do uid
-  Future<Usuario> getUsuarioCollectionByHash(uid) async {
+  Future<Usuario?> getUsuarioCollectionByHash(uid) async {
     // Obtém o usuário encontrado relacionado ao uid da autenticação
     DocumentSnapshot snapshot = await usuariosStream.doc(uid).snapshots().first;
     // Converte snapshot recebida para tipo usuario
-    return Usuario.fromMap(snapshot.data());
+    return Usuario.fromMap(snapshot.data() as Map<String, dynamic>);
   }
 
   /// Obtém a sala da collection/banco de dados através do hash
@@ -52,7 +50,7 @@ class FirebaseService {
     // Obtém o snapshot da sala encontrada relacionada ao hash recebido
     DocumentSnapshot snapshot = await salasStream.doc(hashSala).snapshots().first;
     // Converte snapshot recebida para tipo sala
-    return Sala.fromMap(snapshot.data());
+    return Sala.fromMap(snapshot.data() as Map<String, dynamic>);
   }
 
   /// Obtém a sala da collection/banco de dados através do hash
@@ -60,13 +58,13 @@ class FirebaseService {
     // Obtém o snapshot da Votacao encontrada relacionada ao hash recebido
     DocumentSnapshot snapshot = await votacoesStream.doc(hashVotacao).snapshots().first;
     // Converte snapshot recebida para tipo Votacao
-    return Votacao.fromMap(snapshot.data());
+    return Votacao.fromMap(snapshot.data() as Map<String, dynamic>);
   }
 
   /// Obtém as salas da collection/banco de dados através do hash
   Future<List<Votacao>> getVotacaoCollectionByHashPart(String hashSala) async {
     QuerySnapshot qn = await votacoesStream.where('hashSala', isEqualTo: hashSala).snapshots().first;
-    return qn.docs.map((item) => Votacao.fromMap(item.data())).toList();
+    return qn.docs.map((item) => Votacao.fromMap(item.data() as Map<String, dynamic>)).toList();
   }
 
   /// Obtém as salas da collection/banco de dados através do hash
@@ -79,11 +77,11 @@ class FirebaseService {
   Future<ApiResponse> login(BuildContext context, Usuario usuarioLogin, ProviderApp providerApp) async {
     try {
       // Login no Firebase com login e senha
-      UserCredential authResult = await _auth.signInWithEmailAndPassword(email: usuarioLogin.email, password: usuarioLogin.senha);
+      UserCredential authResult = await _auth.signInWithEmailAndPassword(email: usuarioLogin.email!, password: usuarioLogin.senha!);
       // Obtém pbbjeto usuário do banco de dados
-      Usuario usuario = await getUsuarioCollectionByHash(authResult.user.uid);
+      Usuario? usuario = await getUsuarioCollectionByHash(authResult.user!.uid);
       // Notifica ouvintes
-      providerApp.usuario = usuario;
+      providerApp.usuario = usuario!;
       // Resposta genérica
       return ApiResponse.ok();
     } catch (error) {
@@ -95,9 +93,9 @@ class FirebaseService {
   Future<ApiResponse> loginGoogle(BuildContext context, ProviderApp providerApp) async {
     try {
       // Login com o Google - Abre janela para login no Google
-      final GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
       // Tendo o googleSignInAccount completamos a autenticação
-      final GoogleSignInAuthentication googleAuth = await googleSignInAccount.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleSignInAccount!.authentication;
       // Credenciais para o Firebase
       final AuthCredential authCredential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -106,11 +104,11 @@ class FirebaseService {
       // Login no Firebase
       UserCredential authResult = await _auth.signInWithCredential(authCredential);
       // Obtém objeto usuário do banco de dados
-      Usuario usuario = await getUsuarioCollectionByHash(authResult.user.uid);
+      Usuario? usuario = await getUsuarioCollectionByHash(authResult.user?.uid);
       // Se o usuário ainda não tiver registro na base, insere
       if (usuario == null) {
         // FirebaseUser retornado
-        final User firebaseUser = authResult.user;
+        final User firebaseUser = authResult.user!;
         // Inicializa objeto Usuario para persistir na base
         usuario = Usuario();
         usuario.hash = firebaseUser.uid;
@@ -125,20 +123,23 @@ class FirebaseService {
       // Resposta genérica
       return ApiResponse.ok();
     } catch (error) {
-      return ApiResponse.error(msg: 'Não foi possível fazer o login\n${error.toString()}');
+      if (kDebugMode) {
+        print(error.toString());
+      }
+      return ApiResponse.error(msg: 'Não foi possível fazer o login');
     }
   }
 
   /// Método responsável por inserir um novo usuário
-  Future<ApiResponse> inserir(BuildContext context, Usuario usuario, ProviderApp providerApp, {File file}) async {
+  Future<ApiResponse> inserir(BuildContext context, Usuario usuario, ProviderApp providerApp, {File? file}) async {
     try {
       // Realiza o cadastro de um novo usuário no banco de dados
       UserCredential authResult = await _auth.createUserWithEmailAndPassword(
-        email: usuario.email,
-        password: usuario.senha,
+        email: usuario.email!,
+        password: usuario.senha!,
       );
       // FirebaseUser retornado
-      final User firebaseUser = authResult.user;
+      final User firebaseUser = authResult.user!;
       usuario.hash = firebaseUser.uid;
       // Não armazenar senha do usuário no db, deixar isso para o FirebaseAuth
       usuario.senha = null;
@@ -162,12 +163,12 @@ class FirebaseService {
     }
   }
 
-  Future<ApiResponse> cadastrar(BuildContext context, Usuario usuarioCadastro, ProviderApp providerApp, {File file}) async {
+  Future<ApiResponse> cadastrar(BuildContext context, Usuario usuarioCadastro, ProviderApp providerApp, {File? file}) async {
     try {
       // Atualiza usuário registrado no FirebaseAuth
-      User firebaseUser = FirebaseAuth.instance.currentUser;
+      User? firebaseUser = FirebaseAuth.instance.currentUser;
       // Atualiza no Firebase
-      await firebaseUser.updateDisplayName(usuarioCadastro.nome);
+      await firebaseUser?.updateDisplayName(usuarioCadastro.nome);
       // Atualiza usuário na collection/banco de dados
       Usuario usuario = providerApp.usuario;
       usuario.nome = usuarioCadastro.nome;
@@ -206,12 +207,10 @@ class FirebaseService {
   }
 
   /// Método resopnsável por persistir a sala
-  ///
-  /// Se a [hash] for null irá inserir uma nova, se não irá editar
-  cadastrarSala(BuildContext context, Sala sala, String hash) async {
+  cadastrarSala(BuildContext context, Sala sala) async {
     try {
-      if (hash != null) {
-        await salasStream.doc(hash).update(sala.toMap());
+      if (sala.hash != null) {
+        await salasStream.doc(sala.hash).update(sala.toMap());
       } else {
         await salasStream.doc().set(sala.toMap());
       }
@@ -261,9 +260,6 @@ class FirebaseService {
 
   /// Método responsável por fazer a utilização de um convite
   Future<StatusConvite> utilizarConvite(BuildContext context, String hashSala, String hashUsuario) async {
-    assert(context != null);
-    assert(hashSala != null);
-    assert(hashUsuario != null);
     // Verifica se a sala contida no convite existe
     var isSalaExists = await salaExiste(hashSala);
     if (isSalaExists) {
@@ -271,7 +267,7 @@ class FirebaseService {
       Sala sala = await getSalaCollectionByHash(hashSala);
       // Verifica se o usuário que está tentando utilizar o convite já está na collection
       bool isParticipanteSala = false;
-      for (var hashSalaCorrente in sala.hashsParticipantes) {
+      for (final hashSalaCorrente in sala.hashsParticipantes!) {
         if (hashSalaCorrente == hashUsuario && isParticipanteSala == false) {
           // Usuário já é um participante da sala
           isParticipanteSala = true;
@@ -280,7 +276,7 @@ class FirebaseService {
       // Se o usuário ainda não é participante, adiciona e atualiza no DB
       if (!isParticipanteSala) {
         // Adiciona o usuário que recebeu o convite aos participantes da sala
-        sala.hashsParticipantes.add(hashUsuario);
+        sala.hashsParticipantes!.add(hashUsuario);
         // Atualiza a sala com o novo participante no DB
         await salasStream.doc(hashSala).set(sala.toMap());
         return StatusConvite.conviteAceito;
@@ -327,9 +323,9 @@ class FirebaseService {
     List<Votacao> listaVotacoesSala = await getVotacaoCollectionByHashPart(hashSala);
     int qtdVotacoesConcluidas = listaVotacoesSala.where((element) => element.nota != null).length;
 
-    if (sala.hashsParticipantes.length > qtdVotacoesConcluidas) {
+    if (sala.hashsParticipantes!.length > qtdVotacoesConcluidas) {
       // print(' > Votacoes pendentes');
-    } else if (sala.hashsParticipantes.length == qtdVotacoesConcluidas) {
+    } else if (sala.hashsParticipantes!.length == qtdVotacoesConcluidas) {
       // print(' > Todos votaram');
       toggleVotacaoEncerrada(hashSala, true);
     }
@@ -350,7 +346,7 @@ class FirebaseService {
     await toggleVotacaoEncerrada(hashSala, false);
     List<DocumentSnapshot> listaVotacoesSala = await getVotacaoDocumentsByHashPart(hashSala);
     for (var document in listaVotacoesSala) {
-      var votacao = Votacao.fromMap(document.data());
+      var votacao = Votacao.fromMap(document.data() as Map<String, dynamic>);
       votacao.nota = null;
       await votacoesStream.doc(document.id).set(votacao.toMap());
     }
@@ -371,14 +367,8 @@ extension StatusConviteExtension on StatusConvite {
         return 'Convite aceito com sucesso!';
       case StatusConvite.jaPossuiEsteConvite:
         return 'O usuário já é um participante da sala!';
-        break;
       case StatusConvite.conviteInvalido:
         return 'Nenhuma sala relacionada ao convite!';
-        break;
     }
-    return '';
   }
 }
-//convite aceito
-//ja possui
-//não existe

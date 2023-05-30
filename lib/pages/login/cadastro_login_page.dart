@@ -1,6 +1,4 @@
-// @dart=2.9
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -11,13 +9,12 @@ import 'package:scrumpoker/utils/alert.dart';
 import 'package:scrumpoker/utils/nav.dart';
 import 'package:scrumpoker/widgets/app_button.dart';
 import 'package:scrumpoker/widgets/app_text.dart';
-
 import '../home/home_page.dart';
 import 'login_page.dart';
 
 /// Widget que representa o formulário de cadastro
 class CadastroLoginPage extends StatefulWidget {
-  const CadastroLoginPage({Key key}) : super(key: key);
+  const CadastroLoginPage({Key? key}) : super(key: key);
 
   @override
   State<CadastroLoginPage> createState() => _CadastroLoginPageState();
@@ -30,7 +27,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  File _image;
+  File? _image;
   final picker = ImagePicker();
 
   // Define foco no campo senha
@@ -40,7 +37,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
   // Bloc
   final _bloc = CadastroBloc();
 
-  ProviderApp providerApp;
+  late ProviderApp providerApp;
 
   @override
   void initState() {
@@ -160,25 +157,25 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
     );
   }
 
-  String _validateNome(String text) {
-    if (text.isEmpty) {
+  String? _validateNome(String? text) {
+    if (text?.isEmpty ?? true) {
       return 'Informe o nome';
     }
     return null;
   }
 
-  String _validateLogin(String text) {
-    if (text.isEmpty) {
+  String? _validateLogin(String? text) {
+    if (text?.isEmpty ?? true) {
       return 'Informe o e-mail';
     }
     return null;
   }
 
-  String _validateSenha(String text) {
-    if (text.isEmpty) {
+  String? _validateSenha(String? text) {
+    if (text?.isEmpty ?? true) {
       return 'Informe a senha';
     }
-    if (text.length <= 2) {
+    if (text!.length <= 2) {
       return 'Senha precisa ter mais de 2 números';
     }
     return null;
@@ -189,7 +186,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
   }
 
   _onClickCadastrar(context) async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
     String nome = _tNome.text.trim();
@@ -204,7 +201,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
     if (response.ok) {
       push(context, const HomePage(), replace: true);
     } else {
-      alert(context, response.msg);
+      alert(context, response.msg ?? '...');
     }
   }
 
@@ -227,11 +224,19 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             width: 100,
             height: 100,
             decoration: BoxDecoration(
-                shape: _image != null ? BoxShape.circle : BoxShape.rectangle,
-                image: DecorationImage(fit: BoxFit.fill, image: _image != null ? FileImage(_image) : const AssetImage('assets/imagens/camera.png'))),
-          )
+              shape: _image != null ? BoxShape.circle : BoxShape.rectangle,
+              image: _getDecorationImage(),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  DecorationImage _getDecorationImage() {
+    if (_image != null) {
+      return DecorationImage(image: FileImage(_image!));
+    }
+    return const DecorationImage(fit: BoxFit.fill, image: AssetImage('assets/imagens/camera.png'));
   }
 }

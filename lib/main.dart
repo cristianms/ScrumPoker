@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +22,7 @@ void main() async {
 
 /// App que representa a raiz da navegação dos widgets
 class App extends StatelessWidget {
-  const App({Key key}) : super(key: key);
+  const App({Key? key}) : super(key: key);
 
   /// Principal widget da aplicação
   @override
@@ -42,7 +41,7 @@ class App extends StatelessWidget {
         title: 'Scrum Poker',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: const SplashPage(),
-        builder: (_, Widget child) {
+        builder: (_, Widget? child) {
           return Scaffold(
             key: GlobalScaffold.instance.scaffoldKey,
             body: child,

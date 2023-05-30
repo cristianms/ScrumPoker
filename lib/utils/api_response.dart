@@ -1,5 +1,5 @@
 class ApiResponse<T> {
-  bool? ok;
+  late bool ok;
   String? msg;
   T? result;
 

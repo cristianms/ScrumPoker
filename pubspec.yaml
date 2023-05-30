@@ -3,6 +3,7 @@ description: ScrumPoker
 version: 1.0.1+2
 environment:
   sdk: ">=2.12.0 <3.0.0"
+publish_to: none
 dependencies:
   flutter:
     sdk: flutter
@@ -11,22 +12,26 @@ dependencies:
   http: ^0.13.1
   shared_preferences: ^2.0.5
   connectivity: ^3.0.3
-  firebase_core: ^2.3.0
-  firebase_auth: ^4.1.5
-  firebase_storage: ^11.0.6
+  firebase_core: ^2.13.0
+  firebase_auth: ^4.6.1
+  firebase_storage: ^11.2.1
   google_sign_in: ^5.4.2
-  cloud_firestore: ^4.1.0
+  cloud_firestore: ^4.7.1
   image_picker: ^0.7.3
   provider: ^5.0.0
   responsive_grid: ^2.2.0
   cached_network_image: ^3.2.3
-  auth_buttons: ^3.0.0
+  auth_buttons:
+    git:
+      url: https://github.com/elbeicktalat/flutter_auth_buttons.git
+      ref: main
   share_plus: ^6.3.0
   clipboard: ^0.1.3
   flutter_speed_dial: ^6.2.0
   google_sign_in_web: ^0.10.2
   flutter_native_splash: ^2.2.16
   flutter_launcher_icons: ^0.11.0
+  google_fonts: ^4.0.4
 dev_dependencies:
   flutter_lints: ^2.0.1
   flutter_test:

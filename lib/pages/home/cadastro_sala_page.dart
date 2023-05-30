@@ -1,5 +1,3 @@
-// @dart=2.9
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/blocs/cadastro_sala_bloc.dart';
@@ -11,93 +9,61 @@ import 'package:scrumpoker/widgets/app_text.dart';
 
 /// Widget que representa o formulário de 'Sala'
 class CadastroSalaPage extends StatefulWidget {
-  final DocumentSnapshot snapshotSala;
+  final Sala? sala;
 
-  const CadastroSalaPage({Key key, this.snapshotSala}) : super(key: key);
+  const CadastroSalaPage({Key? key, this.sala}) : super(key: key);
 
   @override
   State<CadastroSalaPage> createState() => _CadastroSalaPageState();
 }
 
 class _CadastroSalaPageState extends State<CadastroSalaPage> {
-  /// Campo para a descrição
-  final _tDescricao = TextEditingController();
-
   /// Chave para acesso ao formulário
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  /// Bloc para controle de cadastro
-  final _bloc = CadastroSalaBloc();
+  /// Campo para a descrição
+  final _tDescricao = TextEditingController();
 
-  /// Objeto Sala
-  Sala sala = Sala();
-  // Instância AppModel para provider
-  ProviderApp appModel;
+  /// Bloc para controle de cadastro
+  final _cadastroSalaBloc = CadastroSalaBloc();
+
+  /// Instância AppModel para provider
+  late ProviderApp appModel;
 
   @override
   void initState() {
     super.initState();
-    // Se receber a snapshot é uma alteração, então carregamos os dados
-    if (widget.snapshotSala != null) {
-      sala = Sala.fromMap(widget.snapshotSala.data());
-    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    _bloc.dispose();
+    _cadastroSalaBloc.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     // Inicializa o provider de AppModel
     appModel = Provider.of<ProviderApp>(context);
-
-    if (widget.snapshotSala != null) {
-      _tDescricao.text = sala.descricao;
-    }
-
-    var tituloAppBar = widget.snapshotSala != null ? 'Sala: ${sala.descricao}' : 'Nova sala';
+    // Inicializa descrição da sala
+    _tDescricao.text = widget.sala?.descricao ?? '';
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text(tituloAppBar),
-        actions: sala == null
-            ? null
-            : <Widget>[
-                // Padding(
-                //   padding: EdgeInsets.only(right: 20.0),
-                //   child: GestureDetector(
-                //     onTap: () async {
-                //       final response = await FirebaseService()
-                //           .deletar(context, widget.snapshotSala?.id);
-                //       if (response.ok) {
-                //         pop(context);
-                //         pop(context);
-                //         Snack.show("Sala excluída");
-                //       }
-                //     },
-                //     child: Icon(
-                //       Icons.delete,
-                //       size: 26.0,
-                //     ),
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: GestureDetector(
-                    onTap: () async {
-                      _onClickCadastrar(context);
-                    },
-                    child: const Icon(
-                      Icons.done,
-                      size: 26.0,
-                    ),
-                  ),
-                ),
-              ],
+        title: Text(widget.sala != null ? 'Sala: ${widget.sala?.descricao}' : 'Nova sala'),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () async => _onClickCadastrar(context),
+              child: const Icon(
+                Icons.done,
+                size: 26.0,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -119,70 +85,33 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
             keyboardType: TextInputType.text,
             action: TextInputAction.next,
           ),
-          // SizedBox(height: 10),
-          // StreamBuilder<bool>(
-          //   stream: _bloc.stream,
-          //   initialData: false,
-          //   builder: (context, snapshot) {
-          //     return AppButton(
-          //       "Cadastrar",
-          //       onPressed: () => _onClickCadastrar(context),
-          //       showProgress: snapshot.data,
-          //     );
-          //   },
-          // ),
-          // Container(
-          //   height: 46,
-          //   margin: EdgeInsets.only(top: 10),
-          //   // child: RaisedButton(
-          //   //   color: Colors.white,
-          //   child: ElevatedButton(
-          //     // color: Colors.white,
-          //     child: Text(
-          //       "Cancelar",
-          //       style: TextStyle(
-          //         color: Colors.blue,
-          //         fontSize: 22,
-          //       ),
-          //     ),
-          //     onPressed: () {
-          //       _onClickVoltar(context);
-          //     },
-          //   ),
-          // ), // voltar
         ],
       ),
     );
   }
 
-  String _validateDescricao(String text) {
-    if (text.isEmpty) {
+  String? _validateDescricao(String? text) {
+    if (text?.isEmpty ?? true) {
       return 'Informe o nome da sala';
     }
     return null;
   }
 
-  // _onClickVoltar(context) {
-  //   pop(context);
-  // }
-
-  _onClickCadastrar(context) async {
-    String descricao = _tDescricao.text.trim();
-    if (!_formKey.currentState.validate()) {
+  Future<void> _onClickCadastrar(context) async {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
-    sala.descricao = descricao;
+    var salaCadastro = Sala();
     // Se é uma sala nova
-    if (widget.snapshotSala == null) {
-      sala.hashCriador = appModel.usuario.hash;
+    if (widget.sala == null) {
+      salaCadastro.hashCriador = appModel.usuario.hash!;
       // O usuário criador é automaticamente adicionado a lista de participantes
-      sala.hashsParticipantes = [appModel.usuario.hash];
+      salaCadastro.hashsParticipantes = [appModel.usuario.hash!];
     }
-    final response = await _bloc.cadastrar(
-      context,
-      sala,
-      widget.snapshotSala?.id,
-    );
+    // Seta a descrição da sala
+    salaCadastro.descricao = _tDescricao.text.trim();
+    // Realiza cadastro na API
+    final response = await _cadastroSalaBloc.cadastrar(context, salaCadastro);
     if (response.ok) {
       pop(context);
       Snack.show(context, 'Dados cadastrados!');

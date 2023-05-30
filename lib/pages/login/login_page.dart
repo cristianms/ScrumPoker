@@ -1,6 +1,4 @@
-// @dart=2.9
 import 'dart:async';
-
 import 'package:auth_buttons/auth_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +17,7 @@ import '../home/home_page.dart';
 
 /// Widget que representa a tela de login
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -31,21 +29,21 @@ class _LoginPageState extends State<LoginPage> {
   final _formkey = GlobalKey<FormState>();
 
   /// Campo login
-  final tLogin = TextEditingController();
+  final _tLogin = TextEditingController();
 
   /// Campo senha
-  final tSenha = TextEditingController();
+  final _tSenha = TextEditingController();
 
   /// Define foco no campo senha
   final _focusSenha = FocusNode();
 
   /// Bloc
-  final _bloc = LoginBloc();
+  final _loginBloc = LoginBloc();
 
   /// StreamController para a autenticação do Google
   final _streamControllerGoogleSigIn = StreamController<bool>();
 
-  ProviderApp providerApp;
+  late ProviderApp providerApp;
 
   @override
   void initState() {
@@ -57,14 +55,13 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     super.dispose();
-    _bloc.dispose();
+    _loginBloc.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    tLogin.text = '';
-    tSenha.text = '';
-
+    _tLogin.text = '';
+    _tSenha.text = '';
     // Obtém o modo de brilho (escuro/claro)
     var brightness = MediaQuery.of(context).platformBrightness;
     // Widget inicial
@@ -88,16 +85,14 @@ class _LoginPageState extends State<LoginPage> {
           child: ListView(
             children: <Widget>[
               const SizedBox(height: 20),
-              //const FlutterLogo(size: 70),
-              Image.asset(
-                'assets/imagens/scrumpoker_icon.png',
-                height: 130,
-              ),
+              // Logo
+              Image.asset('assets/imagens/scrumpoker_icon.png', height: 130),
               const SizedBox(height: 20),
+              // Campo login
               AppText(
                 'Login',
                 'Digite o login',
-                controller: tLogin,
+                controller: _tLogin,
                 validator: _validateLogin,
                 keyboardType: TextInputType.emailAddress,
                 action: TextInputAction.next,
@@ -105,10 +100,11 @@ class _LoginPageState extends State<LoginPage> {
                 autoFocus: true,
               ),
               const SizedBox(height: 10),
+              // Campo senha
               AppText(
                 'Senha',
                 'Digite a senha',
-                controller: tSenha,
+                controller: _tSenha,
                 password: true,
                 validator: _validateSenha,
                 keyboardType: TextInputType.visiblePassword,
@@ -118,15 +114,14 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 10),
               // Validar login
               StreamBuilder<bool>(
-                  stream: _bloc.stream,
-                  initialData: false,
-                  builder: (context, snapshot) {
-                    return AppButton(
-                      'Login',
-                      onPressed: _onClickLogin,
-                      showProgress: snapshot.data,
-                    );
-                  }),
+                stream: _loginBloc.stream,
+                initialData: false,
+                builder: (_, snapshotProcessandoLoginNormal) => AppButton(
+                  'Login',
+                  onPressed: _onClickLogin,
+                  showProgress: snapshotProcessandoLoginNormal.data,
+                ),
+              ),
               const SizedBox(height: 10),
               const Divider(),
               const SizedBox(height: 10),
@@ -134,12 +129,10 @@ class _LoginPageState extends State<LoginPage> {
               StreamBuilder<bool>(
                 stream: _streamControllerGoogleSigIn.stream,
                 initialData: false,
-                builder: (context, snapshot) {
-                  if (snapshot.data == false) {
+                builder: (context, snapshotProcessandoGoogle) {
+                  if (snapshotProcessandoGoogle.data == false) {
                     return GoogleAuthButton(
-                      style: const AuthButtonStyle(
-                        height: kIsWeb ? 60 : null,
-                      ),
+                      style: const AuthButtonStyle(height: kIsWeb ? 60 : null),
                       text: 'Logar com Google',
                       onPressed: () => _onClickLoginGoogle(context),
                     );
@@ -148,8 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               const SizedBox(height: 10),
-
-              /// Novo cadastro
+              // Novo cadastro
               Container(
                 height: 46,
                 margin: const EdgeInsets.only(top: 0),
@@ -169,61 +161,61 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future _onClickLogin() async {
-    bool formOk = _formkey.currentState.validate();
+  Future<void> _onClickLogin() async {
+    bool formOk = _formkey.currentState!.validate();
     if (!formOk) {
       return;
     }
-    String email = tLogin.text;
-    String senha = tSenha.text;
+    String email = _tLogin.text;
+    String senha = _tSenha.text;
     Usuario usuarioLogin = Usuario(
       email: email,
       senha: senha,
     );
-    ApiResponse response = await _bloc.login(context, usuarioLogin, providerApp);
+    ApiResponse response = await _loginBloc.login(context, usuarioLogin, providerApp);
     if (response.ok) {
       if (mounted) {
         push(context, const HomePage(), replace: true);
       }
     } else {
       if (mounted) {
-        alert(context, response.msg);
+        alert(context, response.msg ?? '...');
       }
     }
   }
 
-  _onClickLoginGoogle(BuildContext context) async {
+  Future<void> _onClickLoginGoogle(BuildContext context) async {
     _streamControllerGoogleSigIn.add(true);
-    ApiResponse response = await _bloc.loginGoogle(context, providerApp);
+    ApiResponse response = await _loginBloc.loginGoogle(context, providerApp);
     if (response.ok) {
       if (mounted) {
         push(context, const HomePage(), replace: true);
       }
     } else {
       if (mounted) {
-        alert(context, response.msg, callback: () {
+        alert(context, response.msg ?? '...', callback: () {
           return _streamControllerGoogleSigIn.add(false);
         });
       }
     }
   }
 
-  _onClickCadastrar() {
+  Future<void> _onClickCadastrar() async {
     push(context, const CadastroLoginPage(), replace: true);
   }
 
-  String _validateLogin(String value) {
-    if (value.isEmpty) {
+  String? _validateLogin(String? value) {
+    if (value?.isEmpty ?? true) {
       return 'Digite o texto';
     }
     return null;
   }
 
-  String _validateSenha(String value) {
-    if (value.isEmpty) {
+  String? _validateSenha(String? value) {
+    if (value?.isEmpty ?? true) {
       return 'Digite o texto';
     }
-    if (value.length < 6) {
+    if (value!.length < 6) {
       return 'A senha deve conter pelo menos 6 dígitos. Verifique';
     }
     return null;

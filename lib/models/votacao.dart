@@ -1,10 +1,9 @@
-// @dart=2.9
 import 'dart:convert';
 
 class Votacao {
-  String hashSala;
-  String hashUsuario;
-  int nota;
+  String? hashSala;
+  String? hashUsuario;
+  int? nota;
   Votacao({
     this.hashSala,
     this.hashUsuario,
@@ -12,9 +11,9 @@ class Votacao {
   });
 
   Votacao copyWith({
-    String hashSala,
-    String hashUsuario,
-    int nota,
+    String? hashSala,
+    String? hashUsuario,
+    int? nota,
   }) {
     return Votacao(
       hashSala: hashSala ?? this.hashSala,
@@ -32,8 +31,6 @@ class Votacao {
   }
 
   factory Votacao.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-  
     return Votacao(
       hashSala: map['hashSala'],
       hashUsuario: map['hashUsuario'],

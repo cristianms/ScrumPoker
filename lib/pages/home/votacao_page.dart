@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,11 +19,10 @@ import 'package:clipboard/clipboard.dart';
 /// Recebe por parâmetro o [DocumentSnapshot] da sala atual, foi feito dessa forma para termos
 /// acesso ao id que vai possibilitar a alteração da sala
 class VotacaoPage extends StatefulWidget {
-  /// Snapshot da sala
-  final DocumentSnapshot snapshotSala;
+  final Sala sala;
 
   /// Construtor que recebe o snapshot
-  const VotacaoPage({Key key, this.snapshotSala}) : super(key: key);
+  const VotacaoPage({Key? key, required this.sala}) : super(key: key);
 
   @override
   State<VotacaoPage> createState() => _VotacaoPageState();
@@ -40,13 +38,10 @@ enum StatusStream {
 
 class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   /// Objeto Sala para a conversão de snashot
-  Sala sala;
-
-  /// Objeto Sala para a conversão de snashot
-  Sala salaProvider;
+  late Sala salaProvider;
 
   /// Usuario logado
-  Usuario usuario;
+  late Usuario usuario;
 
   /// Usuario logado
   var statusStream = StatusStream.carregando;
@@ -56,8 +51,6 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    // Converte map de dados do snapshot para objeto Sala
-    sala = Sala.fromMap(widget.snapshotSala.data());
     // Obtém usuário logado
     usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
     // Obtém sala atual
@@ -67,9 +60,9 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(sala),
+      appBar: _appBar(widget.sala),
       body: StreamBuilder(
-        stream: FirebaseService().salasStream.doc(widget.snapshotSala.id).snapshots(),
+        stream: FirebaseService().salasStream.doc(widget.sala.hash).snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           Sala salaStream = Sala(descricao: '...');
           // Se não tiver dados ou ocorrer erro
@@ -96,7 +89,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   }
 
   /// Monta a AppBar
-  Widget _appBar(Sala salaStream) {
+  AppBar _appBar(Sala? salaStream) {
     if (salaStream == null) {
       return AppBar(title: const Text('Sala excluída'));
     }
@@ -109,9 +102,9 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
           padding: const EdgeInsets.only(right: 10.0),
           child: GestureDetector(
             onTap: () async {
-              // var dynamicLink = await criaDynamicLink(hash: snapshotSala.id);
+              // var dynamicLink = await criaDynamicLink(hash: sala.hash);
               Share.share(
-                'Código de participação de sala Scrum:\n${widget.snapshotSala.id}',
+                'Código de participação de sala Scrum:\n${widget.sala.hash}',
                 subject: 'Código de sala - ScrumPoker',
               );
             },
@@ -145,16 +138,16 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   Future<void> _onSelect(String value) async {
     switch (value) {
       case 'copiarCodigoSala':
-        await FlutterClipboard.copy(widget.snapshotSala.id);
+        await FlutterClipboard.copy(widget.sala.hash!);
         if (mounted) {
           Snack.show(context, 'Código da sala copiado!');
         }
         break;
       case 'editarSala':
-        push(context, CadastroSalaPage(snapshotSala: widget.snapshotSala));
+        push(context, CadastroSalaPage(sala: widget.sala));
         break;
       case 'apagarSala':
-        final response = await FirebaseService().deletar(context, widget.snapshotSala?.id);
+        final response = await FirebaseService().deletar(context, widget.sala.hash!);
         if (response.ok) {
           if (mounted) {
             pop(context);
@@ -182,7 +175,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     // return Center(child: Text('A sala pode ter sido excluída'));
     return WillPopScope(
       onWillPop: () async {
-        await _sairVotacao(context, widget.snapshotSala.id, usuario.hash);
+        await _sairVotacao(context, widget.sala.hash!, usuario.hash!);
         return true;
       },
       child: Column(
@@ -228,7 +221,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Text(
-                      salaStream != null && salaStream.votacaoConcluida == false ? 'Aguardando todos votarem...' : 'Votação encerrada!',
+                      salaStream.votacaoConcluida == false ? 'Aguardando todos votarem...' : 'Votação encerrada!',
                       style: const TextStyle(fontSize: 20),
                     ),
                   ),
@@ -238,17 +231,17 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                     children: [
                       AppButton(
                         'Finalizar',
-                        disabled: salaStream != null && salaStream.votacaoConcluida == true ? true : false,
+                        disabled: salaStream.votacaoConcluida == true ? true : false,
                         onPressed: () {
-                          FirebaseService().toggleVotacaoEncerrada(widget.snapshotSala.id, true);
+                          FirebaseService().toggleVotacaoEncerrada(widget.sala.hash!, true);
                         },
                       ),
                       const SizedBox(width: 10),
                       AppButton(
                         'Reiniciar',
-                        disabled: salaStream != null && salaStream.votacaoConcluida != null ? !salaStream.votacaoConcluida : false,
+                        disabled: salaStream.votacaoConcluida != null ? !salaStream.votacaoConcluida! : false,
                         onPressed: () {
-                          FirebaseService().resetarVotacoes(widget.snapshotSala.id);
+                          FirebaseService().resetarVotacoes(widget.sala.hash!);
                         },
                       ),
                     ],
@@ -283,7 +276,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseService().votacoesStream.where('hashSala', isEqualTo: widget.snapshotSala.id).snapshots(),
+          stream: FirebaseService().votacoesStream.where('hashSala', isEqualTo: widget.sala.hash).snapshots(),
           builder: (context, snapshot) {
             // Se não tiver dados ou ocorrer erro
             if (!snapshot.hasData) {
@@ -299,11 +292,11 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
               );
             }
             // Obtém a lista de snapshots de votacões
-            List<DocumentSnapshot> listaSnapsVotacoes = snapshot.data.docs;
+            List<DocumentSnapshot> listaSnapsVotacoes = snapshot.data!.docs;
             // Converte para lista de votações
             List<dynamic> votacoes = listaSnapsVotacoes
                 .map(
-                  (snapshot) => Votacao.fromMap(snapshot.data()),
+                  (snapshot) => Votacao.fromMap(snapshot.data() as Map<String, dynamic>),
                 )
                 .toList();
 
@@ -343,7 +336,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             child: TextError('Não foi possível buscar os dados'),
           );
         }
-        Usuario usuario = Usuario.fromMap(snapshot.data.data());
+        Usuario usuario = Usuario.fromMap(snapshot.data!.data() as Map<String, dynamic>);
         return GestureDetector(
           onLongPress: () => _dialogRemoverParticipante(context, usuario),
           child: SizedBox(
@@ -351,7 +344,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             child: Column(
               children: [
                 Text(
-                  _cortarNome(usuario.nome),
+                  _cortarNome(usuario.nome!),
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 Expanded(
@@ -361,7 +354,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                       Container(
                         child: usuario.urlFoto != null
                             ? CircleAvatar(
-                                backgroundImage: NetworkImage(usuario.urlFoto),
+                                backgroundImage: NetworkImage(usuario.urlFoto!),
                                 backgroundColor: Colors.transparent,
                               )
                             : Image.asset('assets/imagens/usuario.png'),
@@ -416,7 +409,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             TextButton(
               child: const Text('Removê-lo'),
               onPressed: () {
-                FirebaseService().excluirVotacao(widget.snapshotSala.id, usuario.hash);
+                FirebaseService().excluirVotacao(widget.sala.hash!, usuario.hash!);
                 pop(context);
               },
             ),
@@ -470,7 +463,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       height: 70,
       width: 70,
       child: GestureDetector(
-        onTap: () => FirebaseService().votar(context, widget.snapshotSala.id, usuario.hash, nota),
+        onTap: () => FirebaseService().votar(context, widget.sala.hash!, usuario.hash!, nota),
         child: Card(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           elevation: 10,

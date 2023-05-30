@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:flutter/cupertino.dart';
 import 'package:scrumpoker/models/sala.dart';
 import 'package:scrumpoker/models/usuario.dart';
@@ -6,9 +5,9 @@ import 'package:scrumpoker/models/usuario.dart';
 /// Classe que representa um modelo de dados que poderá ser acessado em toda a aplicação através do Provider
 class ProviderApp with ChangeNotifier {
   /// Instância de usuário logado
-  Usuario _usuario;
+  late Usuario _usuario;
   /// Instância de sala
-  Sala _sala;
+  late Sala _sala;
 
   /// Obtém o usuário do Provider
   Usuario get usuario => _usuario;
