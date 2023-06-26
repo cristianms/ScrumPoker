@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/blocs/cadastro_bloc.dart';
 import 'package:scrumpoker/models/provider_app.dart';
@@ -27,8 +25,8 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  File? _image;
-  final picker = ImagePicker();
+  // File? _image;
+  // final picker = ImagePicker();
 
   // Define foco no campo senha
   final _focusEmail = FocusNode();
@@ -75,18 +73,18 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
       key: _formKey,
       child: ListView(
         children: <Widget>[
-          InkWell(
-            child: _getCircleAvatar(),
-            onTap: () => _tirarFoto(),
-          ),
-          const SizedBox(height: 5),
-          const Center(
-            child: Text('Clique na imagem para adicionar uma foto (opcional)',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 12,
-                )),
-          ),
+          // InkWell(
+          //   child: _getCircleAvatar(),
+          //   onTap: () => _tirarFoto(),
+          // ),
+          // const SizedBox(height: 5),
+          // const Center(
+          //   child: Text('Clique na imagem para adicionar uma foto (opcional)',
+          //       style: TextStyle(
+          //         color: Colors.grey,
+          //         fontSize: 12,
+          //       )),
+          // ),
           AppText(
             'Nome',
             'Informe o seu nome',
@@ -197,7 +195,8 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
       email: email,
       senha: senha,
     );
-    final response = await _bloc.inserir(context, usuario, providerApp, file: _image);
+    // final response = await _bloc.inserir(context, usuario, providerApp, file: _image);
+    final response = await _bloc.inserir(context, usuario, providerApp, file: null);
     if (response.ok) {
       push(context, const HomePage(), replace: true);
     } else {
@@ -205,38 +204,38 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
     }
   }
 
-  _tirarFoto() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      }
-    });
-  }
+  // _tirarFoto() async {
+  //   final pickedFile = await picker.getImage(source: ImageSource.camera);
+  //   setState(() {
+  //     if (pickedFile != null) {
+  //       _image = File(pickedFile.path);
+  //     }
+  //   });
+  // }
 
-  _getCircleAvatar() {
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: _image != null ? BoxShape.circle : BoxShape.rectangle,
-              image: _getDecorationImage(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // _getCircleAvatar() {
+  //   return Center(
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: <Widget>[
+  //         Container(
+  //           width: 100,
+  //           height: 100,
+  //           decoration: BoxDecoration(
+  //             shape: _image != null ? BoxShape.circle : BoxShape.rectangle,
+  //             image: _getDecorationImage(),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  DecorationImage _getDecorationImage() {
-    if (_image != null) {
-      return DecorationImage(image: FileImage(_image!));
-    }
-    return const DecorationImage(fit: BoxFit.fill, image: AssetImage('assets/imagens/camera.png'));
-  }
+  // DecorationImage _getDecorationImage() {
+  //   if (_image != null) {
+  //     return DecorationImage(image: FileImage(_image!));
+  //   }
+  //   return const DecorationImage(fit: BoxFit.fill, image: AssetImage('assets/imagens/camera.png'));
+  // }
 }

@@ -1,5 +1,4 @@
-import 'dart:io';
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -8,11 +7,12 @@ import 'package:scrumpoker/blocs/cadastro_bloc.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/pages/home/home_page.dart';
 import 'package:scrumpoker/utils/alert.dart';
-import 'package:scrumpoker/utils/imagem_utils.dart';
 import 'package:scrumpoker/utils/nav.dart';
 import 'package:scrumpoker/utils/snack.dart';
 import 'package:scrumpoker/widgets/app_button.dart';
 import 'package:scrumpoker/widgets/app_text.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:scrumpoker/utils/imagem_utils.dart';
 
 /// Widget que representa o formulário de alteração de dados interno
 class CadastroUsuarioPage extends StatefulWidget {
@@ -32,8 +32,8 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   /// Instância de objeto para captura de foto
   final picker = ImagePicker();
 
-  /// Objeto para armazenar a foto capturada
-  File? _image;
+  // /// Objeto para armazenar a foto capturada
+  // File? _image;
 
   /// Chave para acesso aos dados do formulário
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -63,15 +63,6 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
       child: ListView(
         children: <Widget>[
           const SizedBox(height: 5),
-          const Center(
-            child: Text(
-              'Clique na imagem para atualizar a foto (opcional)',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
-            ),
-          ),
           AppText(
             'Nome',
             'Informe o seu nome',
