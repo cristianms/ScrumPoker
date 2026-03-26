@@ -2,31 +2,31 @@ name: scrumpoker
 description: ScrumPoker
 version: 1.0.1+2
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ^3.11.0
+
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
   # Minhas dependências
-  http: ^0.13.1
+  http: ^1.6.0
   shared_preferences: ^2.0.5
-  connectivity: ^3.0.3
-  firebase_core: ^2.3.0
-  firebase_auth: ^4.1.5
-  firebase_storage: ^11.0.6
-  google_sign_in: ^5.4.2
-  cloud_firestore: ^4.1.0
-  image_picker: ^0.7.3
+  firebase_core: ^4.6.0
+  firebase_auth: ^6.3.0
+  firebase_storage: ^13.2.0
+  google_sign_in: ^5.4.4
+  cloud_firestore: ^6.2.0
+  image_picker: ^1.2.1
   provider: ^5.0.0
   responsive_grid: ^2.2.0
   cached_network_image: ^3.2.3
-  auth_buttons: ^3.0.0
-  share_plus: ^6.3.0
+  share_plus: ^12.0.1
   clipboard: ^0.1.3
   flutter_speed_dial: ^6.2.0
   google_sign_in_web: ^0.10.2
-  flutter_native_splash: ^2.2.16
-  flutter_launcher_icons: ^0.11.0
+  flutter_native_splash: ^2.4.7
+  flutter_launcher_icons: ^0.14.4
+  connectivity_plus: ^7.0.0
 dev_dependencies:
   flutter_lints: ^2.0.1
   flutter_test:

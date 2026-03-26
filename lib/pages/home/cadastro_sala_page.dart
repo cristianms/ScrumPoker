@@ -1,19 +1,16 @@
-// @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/blocs/cadastro_sala_bloc.dart';
 import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/sala.dart';
-import 'package:scrumpoker/utils/nav.dart';
-import 'package:scrumpoker/utils/snack.dart';
 import 'package:scrumpoker/widgets/app_text.dart';
 
 /// Widget que representa o formulário de 'Sala'
 class CadastroSalaPage extends StatefulWidget {
-  final DocumentSnapshot snapshotSala;
+  final DocumentSnapshot<Map<String, dynamic>>? snapshotSala;
 
-  const CadastroSalaPage({Key key, this.snapshotSala}) : super(key: key);
+  const CadastroSalaPage({super.key, this.snapshotSala});
 
   @override
   State<CadastroSalaPage> createState() => _CadastroSalaPageState();
@@ -32,15 +29,22 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
   /// Objeto Sala
   Sala sala = Sala();
   // Instância AppModel para provider
-  ProviderApp appModel;
+  late ProviderApp appModel;
+  late ScaffoldMessengerState messenger;
+  late NavigatorState navigator;
 
   @override
   void initState() {
     super.initState();
     // Se receber a snapshot é uma alteração, então carregamos os dados
-    if (widget.snapshotSala != null) {
-      sala = Sala.fromMap(widget.snapshotSala.data());
-    }
+    sala = Sala.fromMap(widget.snapshotSala?.data() ?? {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    navigator = Navigator.of(context);
+    messenger = ScaffoldMessenger.of(context);
   }
 
   @override
@@ -55,54 +59,48 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
     appModel = Provider.of<ProviderApp>(context);
 
     if (widget.snapshotSala != null) {
-      _tDescricao.text = sala.descricao;
+      _tDescricao.text = sala.descricao ?? '';
     }
 
-    var tituloAppBar = widget.snapshotSala != null ? 'Sala: ${sala.descricao}' : 'Nova sala';
+    var tituloAppBar = widget.snapshotSala != null
+        ? 'Sala: ${sala.descricao}'
+        : 'Nova sala';
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(tituloAppBar),
-        actions: sala == null
-            ? null
-            : <Widget>[
-                // Padding(
-                //   padding: EdgeInsets.only(right: 20.0),
-                //   child: GestureDetector(
-                //     onTap: () async {
-                //       final response = await FirebaseService()
-                //           .deletar(context, widget.snapshotSala?.id);
-                //       if (response.ok) {
-                //         pop(context);
-                //         pop(context);
-                //         Snack.show("Sala excluída");
-                //       }
-                //     },
-                //     child: Icon(
-                //       Icons.delete,
-                //       size: 26.0,
-                //     ),
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: GestureDetector(
-                    onTap: () async {
-                      _onClickCadastrar(context);
-                    },
-                    child: const Icon(
-                      Icons.done,
-                      size: 26.0,
-                    ),
-                  ),
-                ),
-              ],
+        actions: <Widget>[
+          // Padding(
+          //   padding: EdgeInsets.only(right: 20.0),
+          //   child: GestureDetector(
+          //     onTap: () async {
+          //       final response = await FirebaseService()
+          //           .deletar(context, widget.snapshotSala?.id);
+          //       if (response.ok) {
+          //         pop(context);
+          //         pop(context);
+          //         Snack.show("Sala excluída");
+          //       }
+          //     },
+          //     child: Icon(
+          //       Icons.delete,
+          //       size: 26.0,
+          //     ),
+          //   ),
+          // ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () async {
+                _onClickCadastrar(context);
+              },
+              child: const Icon(Icons.done, size: 26.0),
+            ),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: _body(context),
-      ),
+      body: Padding(padding: const EdgeInsets.all(16), child: _body(context)),
     );
   }
 
@@ -155,8 +153,8 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
     );
   }
 
-  String _validateDescricao(String text) {
-    if (text.isEmpty) {
+  String? _validateDescricao(String? text) {
+    if (text == null || text.isEmpty) {
       return 'Informe o nome da sala';
     }
     return null;
@@ -168,24 +166,26 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
 
   _onClickCadastrar(context) async {
     String descricao = _tDescricao.text.trim();
-    if (!_formKey.currentState.validate()) {
+    if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
     sala.descricao = descricao;
     // Se é uma sala nova
     if (widget.snapshotSala == null) {
-      sala.hashCriador = appModel.usuario.hash;
+      sala.hashCriador = appModel.usuario?.hash;
       // O usuário criador é automaticamente adicionado a lista de participantes
-      sala.hashsParticipantes = [appModel.usuario.hash];
+      sala.hashsParticipantes = [appModel.usuario!.hash!];
     }
     final response = await _bloc.cadastrar(
       context,
       sala,
-      widget.snapshotSala?.id,
+      widget.snapshotSala?.id ?? '',
     );
-    if (response.ok) {
-      pop(context);
-      Snack.show(context, 'Dados cadastrados!');
+    if (response.ok ?? false) {
+      navigator.pop();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Dados cadastrados!')),
+      );
     }
   }
 }

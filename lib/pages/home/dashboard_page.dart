@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +12,7 @@ import 'package:scrumpoker/widgets/text_error.dart';
 
 /// Widget que representa a tela de votação
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key key}) : super(key: key);
+  const DashboardPage({super.key});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -21,49 +20,40 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   /// Obtém usuário logado
-  Usuario usuario;
+  late Usuario usuario;
 
   @override
   void initState() {
     super.initState();
     // Obtém usuário logado
-    usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
+    usuario = Provider.of<ProviderApp>(context, listen: false).usuario!;
   }
 
   @override
   Widget build(BuildContext context) {
     // Obtém usuário logado
-    Usuario usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
-    return Column(
-      children: [
-        Expanded(
-          child: _listaSalas(context, usuario),
-        ),
-      ],
-    );
+    Usuario usuario = Provider.of<ProviderApp>(context, listen: false).usuario!;
+    return Column(children: [Expanded(child: _listaSalas(context, usuario))]);
   }
 
   /// Monta lista de salas
   Widget _listaSalas(BuildContext context, Usuario usuario) {
     // Monta lista de acordo com o stream da coleção de salas
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseService()
-          .salasStream
-          .where(
-            'hashsParticipantes',
-            arrayContains: usuario.hash,
-          )
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+      stream: FirebaseService().salasStream
+          .where('hashsParticipantes', arrayContains: usuario.hash)
           .orderBy('descricao')
-          .snapshots(),
+          .snapshots()
+          .cast(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const TextError('Não foi possível buscar as salas');
         }
-        if (!snapshot.hasData || snapshot.data.docs.isEmpty) {
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const MensagemNenhumaSala();
         }
 
-        final docsSalasVinculadasUsuario = snapshot.data.docs;
+        final docsSalasVinculadasUsuario = snapshot.data!.docs;
 
         return Row(
           children: [
@@ -71,9 +61,11 @@ class _DashboardPageState extends State<DashboardPage> {
               child: SizedBox(
                 height: double.infinity,
                 child: ListView.builder(
-                  itemCount: docsSalasVinculadasUsuario != null ? docsSalasVinculadasUsuario.length : 0,
+                  itemCount: docsSalasVinculadasUsuario.length,
                   itemBuilder: (context, index) {
-                    Sala sala = Sala.fromMap(docsSalasVinculadasUsuario[index].data());
+                    Sala sala = Sala.fromMap(
+                      docsSalasVinculadasUsuario[index].data(),
+                    );
                     return CardSalaDashboard(
                       sala: sala,
                       usuario: usuario,
@@ -91,9 +83,7 @@ class _DashboardPageState extends State<DashboardPage> {
 }
 
 class MensagemNenhumaSala extends StatelessWidget {
-  const MensagemNenhumaSala({
-    Key key,
-  }) : super(key: key);
+  const MensagemNenhumaSala({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -109,24 +99,22 @@ class MensagemNenhumaSala extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             TextSpan(
-              text: 'Você pode criar uma nova sala, utilizando o botão abaixo, e convidar o seu time para o ',
+              text:
+                  'Você pode criar uma nova sala, utilizando o botão abaixo, e convidar o seu time para o ',
             ),
             TextSpan(
               text: 'Planning Poker ',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            TextSpan(
-              text: 'enviando o ',
-            ),
+            TextSpan(text: 'enviando o '),
             TextSpan(
               text: 'código de convite ',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
+            TextSpan(text: 'gerado pela sala.\n\n'),
             TextSpan(
-              text: 'gerado pela sala.\n\n',
-            ),
-            TextSpan(
-              text: 'Ou se você recebeu um código aplique-o utilizando o botão abaixo.',
+              text:
+                  'Ou se você recebeu um código aplique-o utilizando o botão abaixo.',
             ),
           ],
         ),
@@ -137,24 +125,20 @@ class MensagemNenhumaSala extends StatelessWidget {
 
 class CardSalaDashboard extends StatelessWidget {
   const CardSalaDashboard({
-    Key key,
-    @required this.sala,
-    @required this.usuario,
-    @required this.snapSala,
-  }) : super(key: key);
+    super.key,
+    required this.sala,
+    required this.usuario,
+    required this.snapSala,
+  });
 
   final Sala sala;
   final Usuario usuario;
-  final DocumentSnapshot<Object> snapSala;
+  final DocumentSnapshot<Map<String, dynamic>> snapSala;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _abreVotacaoSala(
-        context,
-        sala,
-        snapSala,
-      ),
+      onTap: () => _abreVotacaoSala(context, sala, snapSala),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -163,16 +147,11 @@ class CardSalaDashboard extends StatelessWidget {
             children: <Widget>[
               Text(
                 sala.descricao ?? 'Sem título',
-                style: const TextStyle(
-                  fontSize: 25,
-                ),
+                style: const TextStyle(fontSize: 25),
               ),
               Text(
-                '\n${sala.hashsParticipantes.length} participante(s)',
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey,
-                ),
+                '\n${sala.hashsParticipantes?.length ?? 0} participante(s)',
+                style: const TextStyle(fontSize: 15, color: Colors.grey),
               ),
             ],
           ),
@@ -184,22 +163,23 @@ class CardSalaDashboard extends StatelessWidget {
   /// Método responsável por redirecionar para a tela de votação
   ///
   /// Nesse ponto també é criado o vínculo entre sala e usuário
-  void _abreVotacaoSala(BuildContext context, Sala sala, DocumentSnapshot snapshotSalaSelecionada) {
+  void _abreVotacaoSala(
+    BuildContext context,
+    Sala sala,
+    DocumentSnapshot<Map<String, dynamic>> snapshotSalaSelecionada,
+  ) {
+    var navigator = Navigator.of(context);
     // Obtém hash da sala
     String hashSala = snapshotSalaSelecionada.id;
     // Seta sala atual no provider
     Provider.of<ProviderApp>(context, listen: false).sala = sala;
     // Cria objeto Votacao
-    Votacao votacao = Votacao(
-      hashSala: hashSala,
-      hashUsuario: usuario.hash,
-    );
+    Votacao votacao = Votacao(hashSala: hashSala, hashUsuario: usuario.hash);
     // Vincula usuário a sala através da collection de votações
-    FirebaseService().votacoesStream.doc('${hashSala}_${usuario.hash}').set(votacao.toMap());
+    FirebaseService().votacoesStream
+        .doc('${hashSala}_${usuario.hash}')
+        .set(votacao.toMap());
     // Chama a tela de votação
-    push(
-      context,
-      VotacaoPage(snapshotSala: snapshotSalaSelecionada),
-    );
+    push(navigator, VotacaoPage(snapshotSala: snapshotSalaSelecionada));
   }
 }

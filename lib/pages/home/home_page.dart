@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -10,23 +9,23 @@ import 'package:scrumpoker/pages/home/dashboard_page.dart';
 import 'package:scrumpoker/pages/login/login_page.dart';
 import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
-import 'package:scrumpoker/utils/snack.dart';
 import 'package:scrumpoker/widgets/app_text.dart';
+
 import 'cadastro_sala_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin<HomePage> {
   /// Página selecionada no menu lateral
-  int selectedIndex;
-
-  /// Usuario logado
-  Usuario usuario;
+  late int selectedIndex;
+  late ScaffoldMessengerState messenger;
+  late NavigatorState navigator;
 
   /// Campo de código de convite
   final _controllerCodConvite = TextEditingController();
@@ -34,11 +33,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    setState(() {
-      selectedIndex = 0;
-    });
+    selectedIndex = 0;
     // Trata DynamicLinks
     //fetchLinkData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    messenger = ScaffoldMessenger.of(context);
+    navigator = Navigator.of(context);
   }
 
   // /// Obtém dados do DynamicLink, caso o app tenha sido aberto a partir de um link
@@ -80,15 +84,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-    Usuario usuario = Provider.of<ProviderApp>(context, listen: true).usuario;
+    Usuario usuario = Provider.of<ProviderApp>(context, listen: true).usuario!;
 
     List arrayTitles = ['Home', 'Meus dados'];
     List arrayPages = [const DashboardPage(), const CadastroUsuarioPage()];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(arrayTitles[selectedIndex]),
-      ),
+      appBar: AppBar(title: Text(arrayTitles[selectedIndex])),
       body: SafeArea(
         left: true,
         right: true,
@@ -104,7 +106,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           key: scaffoldKey,
           child: ListView(
             children: <Widget>[
-              usuario != null ? _header(context, usuario) : Container(),
+              _header(context, usuario),
               ListTile(
                 leading: const Icon(Icons.home),
                 title: const Text('Home'),
@@ -208,28 +210,35 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void _validarCodigoConvite(BuildContext context) async {
     var codigoConvite = _controllerCodConvite.text;
     if (codigoConvite.isNotEmpty) {
-      final usuarioLogado = Provider.of<ProviderApp>(context, listen: false).usuario;
-      final statusConvite = await FirebaseService().utilizarConvite(context, codigoConvite, usuarioLogado.hash);
+      final usuarioLogado = Provider.of<ProviderApp>(
+        context,
+        listen: false,
+      ).usuario;
+      final statusConvite = await FirebaseService().utilizarConvite(
+        context,
+        codigoConvite,
+        usuarioLogado?.hash ?? '',
+      );
       if (mounted) {
-        Snack.show(context, statusConvite.mensagem);
-        pop(context);
+        messenger.showSnackBar(SnackBar(content: Text(statusConvite.mensagem)));
+        navigator.pop();
       }
     } else {
-      Snack.show(context, 'Convite inválido!');
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Convite inválido!')),
+      );
     }
   }
 
   /// Cabeçalho do drawer menu
   UserAccountsDrawerHeader _header(BuildContext context, Usuario usuario) {
     return UserAccountsDrawerHeader(
-      accountName: Text(usuario.nome ?? 'Vazio'),
-      accountEmail: Text(usuario.email ?? 'Vazio'),
-      currentAccountPicture: usuario.urlFoto != null
-          ? CircleAvatar(
-              // backgroundImage: NetworkImage(usuario.photoUrl),
-              backgroundImage: CachedNetworkImageProvider(usuario.urlFoto),
-            )
-          : Image.asset('assets/imagens/usuario.png'),
+      accountName: Text(usuario.nome ?? ''),
+      accountEmail: Text(usuario.email ?? ''),
+      currentAccountPicture: CircleAvatar(
+        // backgroundImage: NetworkImage(usuario.photoUrl),
+        backgroundImage: CachedNetworkImageProvider(usuario.urlFoto ?? ''),
+      ),
     );
   }
 
@@ -240,11 +249,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     // Encerra página atual (Home)
     Navigator.pop(context);
     // Abre tela de login
-    push(context, const LoginPage(), replace: true);
+    var navigator = Navigator.of(context);
+    push(navigator, const LoginPage(), replace: true);
   }
 
   /// Função para cadastro de nova sala
   _cadastrarNovaSala(BuildContext context) {
-    push(context, const CadastroSalaPage());
+    var navigator = Navigator.of(context);
+    push(navigator, const CadastroSalaPage());
   }
 }
