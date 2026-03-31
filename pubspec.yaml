@@ -27,6 +27,8 @@ dependencies:
   flutter_native_splash: ^2.4.7
   flutter_launcher_icons: ^0.14.4
   connectivity_plus: ^7.0.0
+  firebase_crashlytics: ^5.1.0
+  firebase_analytics: ^12.2.0
 dev_dependencies:
   flutter_lints: ^2.0.1
   flutter_test:
