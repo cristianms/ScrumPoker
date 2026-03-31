@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +9,7 @@ import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({Key key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -19,6 +18,7 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   /// Instancia FirebaseService
   FirebaseService firebaseService = FirebaseService();
+  late NavigatorState navigator;
 
   @override
   void initState() {
@@ -32,20 +32,28 @@ class _SplashPageState extends State<SplashPage> {
       // Retorno da future que recupera o usuário autenticado
       if (firebaseUser != null) {
         // Tenta encontrar o usuário logado no banco de dados
-        firebaseService.getUsuarioCollectionByHash(firebaseUser.uid).then((Usuario usuario) => verificaUsuario(usuario));
+        firebaseService
+            .getUsuarioCollectionByHash(firebaseUser.uid)
+            .then((Usuario usuario) => verificaUsuario(usuario));
       } else {
-        push(context, const LoginPage(), replace: true);
+        push(navigator, const LoginPage(), replace: true);
       }
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    navigator = Navigator.of(context);
+  }
+
   /// Verifica se usuário existe para direcionar para a pagina correta
   verificaUsuario(Usuario usuario) {
-    if (usuario != null) {
+    if (usuario.hash != null) {
       Provider.of<ProviderApp>(context, listen: false).usuario = usuario;
-      push(context, const HomePage(), replace: true);
+      push(navigator, const HomePage(), replace: true);
     } else {
-      push(context, const LoginPage(), replace: true);
+      push(navigator, const LoginPage(), replace: true);
     }
   }
 

@@ -1,12 +1,16 @@
-// @dart=2.9
 import 'package:flutter/material.dart';
 
 class AppCircularButton extends StatelessWidget {
   final String label;
-  final Function onPressed;
+  final void Function()? onPressed;
   final bool showProgress;
 
-  const AppCircularButton(this.label, {Key key, this.onPressed, this.showProgress = false}) : super(key: key);
+  const AppCircularButton(
+    this.label, {
+    super.key,
+    this.onPressed,
+    this.showProgress = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +24,9 @@ class AppCircularButton extends StatelessWidget {
       child: showProgress
           ? const Center(
               child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ))
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
           : Text(
               label,
               style: const TextStyle(

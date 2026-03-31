@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=C:\Users\Cristian\fvm\versions\3.7.10"
-export "FLUTTER_APPLICATION_PATH=D:\Desenvolvimento\Flutter\scrumpoker"
+export "FLUTTER_ROOT=C:\Users\felipe-m\fvm\versions\3.41.6"
+export "FLUTTER_APPLICATION_PATH=C:\Users\felipe-m\Documents\dev\Flutter\ScrumPoker"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib\main.dart"
 export "FLUTTER_BUILD_DIR=build"

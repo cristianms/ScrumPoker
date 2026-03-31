@@ -1,4 +1,3 @@
-// @dart=2.9
 import 'dart:async';
 import 'dart:io';
 
@@ -10,16 +9,36 @@ import 'package:scrumpoker/utils/api_response.dart';
 import 'package:scrumpoker/utils/simple_bloc.dart';
 
 class CadastroBloc extends SimpleBloc<bool> {
-  Future<ApiResponse> inserir(BuildContext context, Usuario usuario, ProviderApp providerApp, {File file}) async {
+  Future<ApiResponse> inserir(
+    BuildContext context,
+    Usuario usuario,
+    ProviderApp providerApp, {
+    File? file,
+  }) async {
     add(true);
-    ApiResponse response = await FirebaseService().inserir(context, usuario, providerApp, file: file);
+    ApiResponse response = await FirebaseService().inserir(
+      context,
+      usuario,
+      providerApp,
+      file: file,
+    );
     add(false);
     return response;
   }
 
-  Future<ApiResponse> cadastrar(BuildContext context, Usuario usuario, ProviderApp providerApp, {File file}) async {
+  Future<ApiResponse> cadastrar(
+    BuildContext context,
+    Usuario usuario,
+    ProviderApp providerApp, {
+    File? file,
+  }) async {
     add(true);
-    ApiResponse response = await FirebaseService().cadastrar(context, usuario, providerApp, file: file);
+    ApiResponse response = await FirebaseService().cadastrar(
+      context,
+      usuario,
+      providerApp,
+      file: file,
+    );
     add(false);
     return response;
   }

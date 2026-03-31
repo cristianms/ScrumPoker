@@ -1,7 +1,6 @@
-// @dart=2.9
 import 'dart:async';
 
-import 'package:auth_buttons/auth_buttons.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrumpoker/blocs/login_bloc.dart';
@@ -13,13 +12,12 @@ import 'package:scrumpoker/utils/api_response.dart';
 import 'package:scrumpoker/utils/nav.dart';
 import 'package:scrumpoker/widgets/app_button.dart';
 import 'package:scrumpoker/widgets/app_text.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../home/home_page.dart';
 
 /// Widget que representa a tela de login
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -45,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
   /// StreamController para a autenticação do Google
   final _streamControllerGoogleSigIn = StreamController<bool>();
 
-  ProviderApp providerApp;
+  late ProviderApp providerApp;
 
   @override
   void initState() {
@@ -71,10 +69,7 @@ class _LoginPageState extends State<LoginPage> {
     return MaterialApp(
       theme: ThemeData(),
       darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: _body(brightness),
-      ),
+      home: Scaffold(resizeToAvoidBottomInset: false, body: _body(brightness)),
     );
   }
 
@@ -89,10 +84,7 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               const SizedBox(height: 20),
               //const FlutterLogo(size: 70),
-              Image.asset(
-                'assets/imagens/scrumpoker_icon.png',
-                height: 130,
-              ),
+              Image.asset('assets/imagens/scrumpoker_icon.png', height: 130),
               const SizedBox(height: 20),
               AppText(
                 'Login',
@@ -118,15 +110,16 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 10),
               // Validar login
               StreamBuilder<bool>(
-                  stream: _bloc.stream,
-                  initialData: false,
-                  builder: (context, snapshot) {
-                    return AppButton(
-                      'Login',
-                      onPressed: _onClickLogin,
-                      showProgress: snapshot.data,
-                    );
-                  }),
+                stream: _bloc.stream,
+                initialData: false,
+                builder: (context, snapshot) {
+                  return AppButton(
+                    'Login',
+                    onPressed: _onClickLogin,
+                    showProgress: snapshot.data ?? true,
+                  );
+                },
+              ),
               const SizedBox(height: 10),
               const Divider(),
               const SizedBox(height: 10),
@@ -136,11 +129,17 @@ class _LoginPageState extends State<LoginPage> {
                 initialData: false,
                 builder: (context, snapshot) {
                   if (snapshot.data == false) {
-                    return GoogleAuthButton(
-                      style: const AuthButtonStyle(
-                        height: kIsWeb ? 60 : null,
+                    return ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black87,
+                        minimumSize: const Size(
+                          double.infinity,
+                          kIsWeb ? 60 : 50,
+                        ),
                       ),
-                      text: 'Logar com Google',
+                      icon: const Icon(Icons.login, color: Colors.blue),
+                      label: const Text('Logar com Google'),
                       onPressed: () => _onClickLoginGoogle(context),
                     );
                   }
@@ -170,57 +169,65 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future _onClickLogin() async {
-    bool formOk = _formkey.currentState.validate();
+    var navigator = Navigator.of(context);
+    bool formOk = _formkey.currentState?.validate() ?? false;
     if (!formOk) {
       return;
     }
     String email = tLogin.text;
     String senha = tSenha.text;
-    Usuario usuarioLogin = Usuario(
-      email: email,
-      senha: senha,
+    Usuario usuarioLogin = Usuario(email: email, senha: senha);
+    ApiResponse response = await _bloc.login(
+      context,
+      usuarioLogin,
+      providerApp,
     );
-    ApiResponse response = await _bloc.login(context, usuarioLogin, providerApp);
-    if (response.ok) {
+    if (response.ok ?? false) {
       if (mounted) {
-        push(context, const HomePage(), replace: true);
+        push(navigator, const HomePage(), replace: true);
       }
     } else {
       if (mounted) {
-        alert(context, response.msg);
+        alert(context, response.msg ?? 'Não foi possível realizar o login');
       }
     }
   }
 
   _onClickLoginGoogle(BuildContext context) async {
     _streamControllerGoogleSigIn.add(true);
+    var navigator = Navigator.of(context);
     ApiResponse response = await _bloc.loginGoogle(context, providerApp);
-    if (response.ok) {
+    if (response.ok ?? false) {
       if (mounted) {
-        push(context, const HomePage(), replace: true);
+        push(navigator, const HomePage(), replace: true);
       }
     } else {
-      if (mounted) {
-        alert(context, response.msg, callback: () {
-          return _streamControllerGoogleSigIn.add(false);
-        });
+      if (context.mounted) {
+        alert(
+          context,
+          response.msg ?? 'Não foi possível realizar o login',
+          callback: () {
+            return _streamControllerGoogleSigIn.add(false);
+          },
+        );
       }
     }
   }
 
   _onClickCadastrar() {
-    push(context, const CadastroLoginPage(), replace: true);
+    var navigator = Navigator.of(context);
+    push(navigator, const CadastroLoginPage(), replace: true);
   }
 
-  String _validateLogin(String value) {
-    if (value.isEmpty) {
+  String? _validateLogin(String? value) {
+    if (value == null || value.isEmpty) {
       return 'Digite o texto';
     }
     return null;
   }
 
-  String _validateSenha(String value) {
-    if (value.isEmpty) {
+  String? _validateSenha(String? value) {
+    if (value == null || value.isEmpty) {
       return 'Digite o texto';
     }
     if (value.length < 6) {

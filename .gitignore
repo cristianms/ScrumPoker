@@ -1,3 +1,6 @@
+# PSPad backups
+**/PsPadBK/
+
 # Miscellaneous
 *.class
 *.log
@@ -31,6 +34,12 @@
 .pub/
 /build/
 
+# FVM related
+.fvm/
+
+# VS Code related
+.vscode/
+
 # Web related
 
 # Symbolication related
@@ -43,3 +52,6 @@ app.*.map.json
 google-services.json
 services.tar
 anotacoes.txt
+
+# FVM Version Cache
+.fvm/

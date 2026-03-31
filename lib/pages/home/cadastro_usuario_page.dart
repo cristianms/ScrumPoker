@@ -1,24 +1,21 @@
-// @dart=2.9
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/blocs/cadastro_bloc.dart';
+import 'package:scrumpoker/models/provider_app.dart';
 import 'package:scrumpoker/models/usuario.dart';
 import 'package:scrumpoker/pages/home/home_page.dart';
 import 'package:scrumpoker/utils/alert.dart';
 import 'package:scrumpoker/utils/imagem_utils.dart';
 import 'package:scrumpoker/utils/nav.dart';
-import 'package:scrumpoker/utils/snack.dart';
 import 'package:scrumpoker/widgets/app_button.dart';
 import 'package:scrumpoker/widgets/app_text.dart';
 
 /// Widget que representa o formulário de alteração de dados interno
 class CadastroUsuarioPage extends StatefulWidget {
-  const CadastroUsuarioPage({Key key}) : super(key: key);
+  const CadastroUsuarioPage({super.key});
 
   @override
   State<CadastroUsuarioPage> createState() => _CadastroUsuarioPageState();
@@ -35,7 +32,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   final picker = ImagePicker();
 
   /// Objeto para armazenar a foto capturada
-  File _image;
+  File? _image;
 
   /// Chave para acesso aos dados do formulário
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -43,7 +40,8 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   /// Objeto bloc para controle da ação 'Cadastrar'
   final _bloc = CadastroBloc();
 
-  ProviderApp providerApp;
+  late ProviderApp providerApp;
+  late ScaffoldMessengerState messenger;
 
   /// Inicializa estado
   @override
@@ -53,12 +51,18 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    messenger = ScaffoldMessenger.of(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Usuario usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
+    Usuario usuario = Provider.of<ProviderApp>(context, listen: false).usuario!;
 
     // Preenche os campos do formulário
-    _tNome.text = usuario.nome;
-    _tEmail.text = usuario.email;
+    _tNome.text = usuario.nome ?? '';
+    _tEmail.text = usuario.email ?? '';
 
     return Form(
       key: _formKey,
@@ -72,10 +76,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
           const Center(
             child: Text(
               'Clique na imagem para atualizar a foto (opcional)',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ),
           AppText(
@@ -101,7 +102,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
               return AppButton(
                 'Cadastrar',
                 onPressed: () => _onClickCadastrar(context),
-                showProgress: snapshot.data,
+                showProgress: snapshot.data ?? false,
               );
             },
           ),
@@ -111,8 +112,8 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   }
 
   // Validador do campo Nome
-  String _validateNome(String text) {
-    if (text.isEmpty) {
+  String? _validateNome(String? text) {
+    if (text == null || text.isEmpty) {
       return 'Informe o nome';
     }
     return null;
@@ -121,7 +122,7 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
   /// Método que atualiza os dados do usuário
   _onClickCadastrar(context) async {
     // Realiza a validação dor formulário
-    if (!_formKey.currentState.validate()) {
+    if (!(_formKey.currentState?.validate() ?? false)) {
       return;
     }
     // Monta objeto Usuario para persistência
@@ -129,30 +130,39 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
       nome: _tNome.text.trim(),
       email: _tEmail.text.trim(),
     );
-    final response = await _bloc.cadastrar(context, usuario, providerApp, file: _image);
+    final response = await _bloc.cadastrar(
+      context,
+      usuario,
+      providerApp,
+      file: _image,
+    );
     // Se a request for bem sucedida redireciona para a Home
-    if (response.ok) {
-      Snack.show(context, 'Informações atualizadas!');
+    if (response.ok ?? false) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Informações atualizadas!')),
+      );
       push(context, const HomePage(), replace: true);
     } else {
-      alert(context, response.msg);
+      alert(
+        context,
+        response.msg ?? 'Não foi possível atualizar as informações',
+      );
     }
   }
 
   _tirarFotoReduzida() async {
-    final pickedFile = await picker.getImage(
-        source: ImageSource.camera,
-        imageQuality: 100,
-        maxHeight: 300,
-        maxWidth: 300);
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 100,
+      maxHeight: 300,
+      maxWidth: 300,
+    );
+    if (pickedFile == null) return;
     setState(() {
-      // print()
       _image = File(pickedFile.path);
-
-//      final bytes = File(pickedFile.path).readAsBytesSync();
-//      ImagemUtils.saveImageToPrefs(base64Encode(bytes));
       ImagemUtils.saveImageToPrefs(
-          ImagemUtils.base64String(File(pickedFile.path).readAsBytesSync()));
+        ImagemUtils.base64String(File(pickedFile.path).readAsBytesSync()),
+      );
     });
   }
 
@@ -169,13 +179,14 @@ class _CadastroUsuarioPageState extends State<CadastroUsuarioPage> {
               shape: _image != null || url != null
                   ? BoxShape.circle
                   : BoxShape.rectangle,
-              image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: _image != null
-                      ? FileImage(_image)
-                      : (url != null
-                          ? CachedNetworkImageProvider(url)
-                          : const AssetImage('assets/imagens/camera.png'))),
+              image: _image != null
+                  ? DecorationImage(fit: BoxFit.fill, image: FileImage(_image!))
+                  : url != null
+                  ? DecorationImage(
+                      fit: BoxFit.fill,
+                      image: NetworkImage(url as String),
+                    )
+                  : null,
             ),
           ),
         ],

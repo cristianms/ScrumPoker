@@ -1,4 +1,4 @@
-// @dart=2.9
+import 'package:clipboard/clipboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,11 +9,9 @@ import 'package:scrumpoker/models/votacao.dart';
 import 'package:scrumpoker/pages/home/cadastro_sala_page.dart';
 import 'package:scrumpoker/services/firebase_service.dart';
 import 'package:scrumpoker/utils/nav.dart';
-import 'package:scrumpoker/utils/snack.dart';
 import 'package:scrumpoker/widgets/app_button.dart';
 import 'package:scrumpoker/widgets/text_error.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:clipboard/clipboard.dart';
 
 /// Widget que representa a tela de votação
 ///
@@ -21,32 +19,29 @@ import 'package:clipboard/clipboard.dart';
 /// acesso ao id que vai possibilitar a alteração da sala
 class VotacaoPage extends StatefulWidget {
   /// Snapshot da sala
-  final DocumentSnapshot snapshotSala;
+  final DocumentSnapshot<Map<String, dynamic>> snapshotSala;
 
   /// Construtor que recebe o snapshot
-  const VotacaoPage({Key key, this.snapshotSala}) : super(key: key);
+  const VotacaoPage({super.key, required this.snapshotSala});
 
   @override
   State<VotacaoPage> createState() => _VotacaoPageState();
 }
 
-enum StatusStream {
-  carregando,
-  conectado,
-  semDados,
-  erro,
-  salaExcluida,
-}
+enum StatusStream { carregando, conectado, semDados, erro, salaExcluida }
 
 class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   /// Objeto Sala para a conversão de snashot
-  Sala sala;
+  late Sala sala;
 
   /// Objeto Sala para a conversão de snashot
-  Sala salaProvider;
+  late Sala salaProvider;
 
   /// Usuario logado
-  Usuario usuario;
+  late Usuario usuario;
+
+  late ScaffoldMessengerState messenger;
+  late NavigatorState navigator;
 
   /// Usuario logado
   var statusStream = StatusStream.carregando;
@@ -57,11 +52,18 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     // Converte map de dados do snapshot para objeto Sala
-    sala = Sala.fromMap(widget.snapshotSala.data());
+    sala = Sala.fromMap(widget.snapshotSala.data() ?? {});
     // Obtém usuário logado
-    usuario = Provider.of<ProviderApp>(context, listen: false).usuario;
+    usuario = Provider.of<ProviderApp>(context, listen: false).usuario!;
     // Obtém sala atual
-    salaProvider = Provider.of<ProviderApp>(context, listen: false).sala;
+    salaProvider = Provider.of<ProviderApp>(context, listen: false).sala!;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    messenger = ScaffoldMessenger.of(context);
+    navigator = Navigator.of(context);
   }
 
   @override
@@ -69,7 +71,9 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     return Scaffold(
       appBar: _appBar(sala),
       body: StreamBuilder(
-        stream: FirebaseService().salasStream.doc(widget.snapshotSala.id).snapshots(),
+        stream: FirebaseService().salasStream
+            .doc(widget.snapshotSala.id)
+            .snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           Sala salaStream = Sala(descricao: '...');
           // Se não tiver dados ou ocorrer erro
@@ -96,10 +100,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   }
 
   /// Monta a AppBar
-  Widget _appBar(Sala salaStream) {
-    if (salaStream == null) {
-      return AppBar(title: const Text('Sala excluída'));
-    }
+  AppBar _appBar(Sala salaStream) {
     return AppBar(
       title: Text('Votação - ${salaStream.descricao}'),
       // Botões de actions no cabeçalho da tela
@@ -110,9 +111,12 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
           child: GestureDetector(
             onTap: () async {
               // var dynamicLink = await criaDynamicLink(hash: snapshotSala.id);
-              Share.share(
-                'Código de participação de sala Scrum:\n${widget.snapshotSala.id}',
-                subject: 'Código de sala - ScrumPoker',
+              SharePlus.instance.share(
+                ShareParams(
+                  text:
+                      'Código de participação de sala Scrum:\n${widget.snapshotSala.id}',
+                  subject: 'Código de sala - ScrumPoker',
+                ),
               );
             },
             child: const Icon(Icons.share, size: 26.0),
@@ -147,21 +151,26 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       case 'copiarCodigoSala':
         await FlutterClipboard.copy(widget.snapshotSala.id);
         if (mounted) {
-          Snack.show(context, 'Código da sala copiado!');
+          messenger.showSnackBar(
+            const SnackBar(content: Text('Código da sala copiado!')),
+          );
         }
-        break;
       case 'editarSala':
-        push(context, CadastroSalaPage(snapshotSala: widget.snapshotSala));
-        break;
+        var navigator = Navigator.of(context);
+        push(navigator, CadastroSalaPage(snapshotSala: widget.snapshotSala));
       case 'apagarSala':
-        final response = await FirebaseService().deletar(context, widget.snapshotSala?.id);
-        if (response.ok) {
+        final response = await FirebaseService().deletar(
+          context,
+          widget.snapshotSala.id,
+        );
+        if (response.ok ?? false) {
           if (mounted) {
-            pop(context);
-            Snack.show(context, 'Sala excluída');
+            navigator.pop();
+            messenger.showSnackBar(
+              const SnackBar(content: Text('Sala excluída')),
+            );
           }
         }
-        break;
     }
   }
 
@@ -171,7 +180,9 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       return const Center(child: CircularProgressIndicator());
     }
     if (statusStream == StatusStream.erro) {
-      return const Center(child: Text('Ocorreu algum erro no carregamento dos dados'));
+      return const Center(
+        child: Text('Ocorreu algum erro no carregamento dos dados'),
+      );
     }
     if (statusStream == StatusStream.semDados) {
       return const Center(child: Text('Nã há dados para apresentar'));
@@ -180,10 +191,15 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       return const Center(child: Text('A sala pode ter sido excluída'));
     }
     // return Center(child: Text('A sala pode ter sido excluída'));
-    return WillPopScope(
-      onWillPop: () async {
-        await _sairVotacao(context, widget.snapshotSala.id, usuario.hash);
-        return true;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        var navigator = Navigator.of(context);
+        if (didPop) {
+          return;
+        }
+        await _sairVotacao(context, widget.snapshotSala.id, usuario.hash!);
+        navigator.pop();
       },
       child: Column(
         children: [
@@ -199,7 +215,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                       padding: const EdgeInsets.all(8.0),
                       child: _gridNotas(),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -228,7 +244,9 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Text(
-                      salaStream != null && salaStream.votacaoConcluida == false ? 'Aguardando todos votarem...' : 'Votação encerrada!',
+                      salaStream.votacaoConcluida == false
+                          ? 'Aguardando todos votarem...'
+                          : 'Votação encerrada!',
                       style: const TextStyle(fontSize: 20),
                     ),
                   ),
@@ -238,17 +256,22 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                     children: [
                       AppButton(
                         'Finalizar',
-                        disabled: salaStream != null && salaStream.votacaoConcluida == true ? true : false,
+                        disabled: salaStream.votacaoConcluida == true,
                         onPressed: () {
-                          FirebaseService().toggleVotacaoEncerrada(widget.snapshotSala.id, true);
+                          FirebaseService().toggleVotacaoEncerrada(
+                            widget.snapshotSala.id,
+                            true,
+                          );
                         },
                       ),
                       const SizedBox(width: 10),
                       AppButton(
                         'Reiniciar',
-                        disabled: salaStream != null && salaStream.votacaoConcluida != null ? !salaStream.votacaoConcluida : false,
+                        disabled: !(salaStream.votacaoConcluida ?? false),
                         onPressed: () {
-                          FirebaseService().resetarVotacoes(widget.snapshotSala.id);
+                          FirebaseService().resetarVotacoes(
+                            widget.snapshotSala.id,
+                          );
                         },
                       ),
                     ],
@@ -268,10 +291,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
         padding: const EdgeInsets.all(4.0),
         child: Text(
           titulo,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
         ),
       ),
     );
@@ -282,8 +302,11 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseService().votacoesStream.where('hashSala', isEqualTo: widget.snapshotSala.id).snapshots(),
+        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: FirebaseService().votacoesStream
+              .where('hashSala', isEqualTo: widget.snapshotSala.id)
+              .snapshots()
+              .cast(),
           builder: (context, snapshot) {
             // Se não tiver dados ou ocorrer erro
             if (!snapshot.hasData) {
@@ -299,12 +322,11 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
               );
             }
             // Obtém a lista de snapshots de votacões
-            List<DocumentSnapshot> listaSnapsVotacoes = snapshot.data.docs;
+            List<DocumentSnapshot<Map<String, dynamic>>> listaSnapsVotacoes =
+                snapshot.data!.docs;
             // Converte para lista de votações
             List<dynamic> votacoes = listaSnapsVotacoes
-                .map(
-                  (snapshot) => Votacao.fromMap(snapshot.data()),
-                )
+                .map((snapshot) => Votacao.fromMap(snapshot.data() ?? {}))
                 .toList();
 
             return GridView.count(
@@ -314,9 +336,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
               mainAxisSpacing: 8,
               crossAxisCount: 4,
               children: votacoes
-                  .map(
-                    (votacao) => _itemGridUsuarios(votacao, salaStream),
-                  )
+                  .map((votacao) => _itemGridUsuarios(votacao, salaStream))
                   .toList(),
             );
           },
@@ -327,9 +347,12 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Montagem do item do grid de usuários
   Widget _itemGridUsuarios(Votacao votacao, Sala salaStream) {
-    return FutureBuilder(
-      future: FirebaseService().usuariosStream.doc(votacao.hashUsuario).get(),
-      builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+    return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      future: FirebaseService().usuariosStream
+          .doc(votacao.hashUsuario)
+          .get()
+          .then((v) => v as DocumentSnapshot<Map<String, dynamic>>),
+      builder: (context, snapshot) {
         // Se não tiver dados ou ocorrer erro
         if (!snapshot.hasData) {
           return const Padding(
@@ -343,7 +366,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             child: TextError('Não foi possível buscar os dados'),
           );
         }
-        Usuario usuario = Usuario.fromMap(snapshot.data.data());
+        Usuario usuario = Usuario.fromMap(snapshot.data?.data() ?? {});
         return GestureDetector(
           onLongPress: () => _dialogRemoverParticipante(context, usuario),
           child: SizedBox(
@@ -351,20 +374,19 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
             child: Column(
               children: [
                 Text(
-                  _cortarNome(usuario.nome),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  _cortarNome(usuario.nome ?? ''),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
                 Expanded(
                   child: Stack(
                     fit: StackFit.expand,
                     children: <Widget>[
-                      Container(
-                        child: usuario.urlFoto != null
-                            ? CircleAvatar(
-                                backgroundImage: NetworkImage(usuario.urlFoto),
-                                backgroundColor: Colors.transparent,
-                              )
-                            : Image.asset('assets/imagens/usuario.png'),
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(usuario.urlFoto ?? ''),
+                        backgroundColor: Colors.transparent,
                       ),
                       Positioned(
                         bottom: 0,
@@ -374,15 +396,10 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                           height: 30,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.black,
-                              width: 0.1,
-                            ),
-                            color: votacao.nota != null ? Colors.lightGreen : Colors.redAccent,
+                            border: Border.all(color: Colors.black, width: 0.1),
+                            color: Colors.lightGreen,
                           ),
-                          child: Center(
-                            child: _nota(votacao, salaStream),
-                          ),
+                          child: Center(child: _nota(votacao, salaStream)),
                         ),
                       ),
                     ],
@@ -404,20 +421,25 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
         return AlertDialog(
           title: const Text('Remover participante'),
           content: SingleChildScrollView(
-            child: Text('Tem certeza que deseja remover ${usuario.nome} da sala?'),
+            child: Text(
+              'Tem certeza que deseja remover ${usuario.nome} da sala?',
+            ),
           ),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),
               onPressed: () {
-                pop(context);
+                navigator.pop();
               },
             ),
             TextButton(
               child: const Text('Removê-lo'),
               onPressed: () {
-                FirebaseService().excluirVotacao(widget.snapshotSala.id, usuario.hash);
-                pop(context);
+                FirebaseService().excluirVotacao(
+                  widget.snapshotSala.id,
+                  usuario.hash!,
+                );
+                navigator.pop();
               },
             ),
           ],
@@ -427,12 +449,16 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
   }
 
   /// Sair da votação
-  Future<void> _sairVotacao(BuildContext context, String hashSala, String hashUsuario) async {
+  Future<void> _sairVotacao(
+    BuildContext context,
+    String hashSala,
+    String hashUsuario,
+  ) async {
     // Vincula usuário a sala através da collection de votações
     await FirebaseService().excluirVotacao(hashSala, hashUsuario);
     // Volta a tela anterior
     if (mounted) {
-      pop(context);
+      navigator.pop();
     }
   }
 
@@ -470,9 +496,16 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       height: 70,
       width: 70,
       child: GestureDetector(
-        onTap: () => FirebaseService().votar(context, widget.snapshotSala.id, usuario.hash, nota),
+        onTap: () => FirebaseService().votar(
+          context,
+          widget.snapshotSala.id,
+          usuario.hash!,
+          nota,
+        ),
         child: Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
           elevation: 10,
           child: Center(
             child: Text(
@@ -492,14 +525,17 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Text da nota
   Widget _nota(Votacao votacao, Sala salaStream) {
-    if (votacao.nota == null) {
-      return const Text('', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
-    }
     if (salaStream.votacaoConcluida == true) {
-      return Text(votacao.nota.toString(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
+      return Text(
+        votacao.nota?.toString() ?? '',
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+      );
     }
     if (votacao.hashUsuario == usuario.hash) {
-      return Text(votacao.nota.toString(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
+      return Text(
+        votacao.nota?.toString() ?? '',
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+      );
     }
     return const Icon(Icons.done);
   }

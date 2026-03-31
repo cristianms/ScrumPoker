@@ -1,14 +1,13 @@
-// @dart=2.9
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
 /// Classe que representa o modelo da entidade Sala
 class Sala {
-  String descricao;
-  String hashCriador;
-  List<String> hashsParticipantes;
-  bool votacaoConcluida;
+  String? descricao;
+  String? hashCriador;
+  List<String>? hashsParticipantes;
+  bool? votacaoConcluida;
 
   /// Construtor
   Sala({
@@ -19,10 +18,10 @@ class Sala {
   });
 
   Sala copyWith({
-    String descricao,
-    String hashCriador,
-    List<String> hashsParticipantes,
-    bool votacaoConcluida,
+    String? descricao,
+    String? hashCriador,
+    List<String>? hashsParticipantes,
+    bool? votacaoConcluida,
   }) {
     return Sala(
       descricao: descricao ?? this.descricao,
@@ -42,12 +41,12 @@ class Sala {
   }
 
   factory Sala.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Sala(
       descricao: map['descricao'],
       hashCriador: map['hashCriador'],
-      hashsParticipantes: List<String>.from(map['hashsParticipantes']),
+      hashsParticipantes: map['hashsParticipantes'] != null
+          ? List<String>.from(map['hashsParticipantes'])
+          : null,
       votacaoConcluida: map['votacaoConcluida'],
     );
   }
