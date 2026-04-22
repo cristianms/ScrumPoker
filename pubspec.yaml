@@ -14,7 +14,7 @@ dependencies:
   firebase_core: ^4.6.0
   firebase_auth: ^6.3.0
   firebase_storage: ^13.2.0
-  google_sign_in: ^5.4.4
+  google_sign_in: ^7.2.0
   cloud_firestore: ^6.2.0
   image_picker: ^1.2.1
   provider: ^5.0.0
@@ -23,7 +23,7 @@ dependencies:
   share_plus: ^12.0.1
   clipboard: ^0.1.3
   flutter_speed_dial: ^6.2.0
-  google_sign_in_web: ^0.10.2
+  google_sign_in_web: ^1.1.0
   flutter_native_splash: ^2.4.7
   flutter_launcher_icons: ^0.14.4
   connectivity_plus: ^7.0.0
@@ -70,9 +70,9 @@ flutter_icons:
   min_sdk_android: 21 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "path/to/image.png"
-    background_color: "#hexcode"
-    theme_color: "#hexcode"
+    image_path: "assets/imagens/scrumpoker_icon_grande.png"
+    background_color: "#ffffff"
+    theme_color: "#ffffff"
   windows:
     generate: true
     image_path: "assets/imagens/scrumpoker_icon_grande.png"

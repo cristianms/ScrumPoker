@@ -67,10 +67,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
         home: Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(title: const Text('Cadastro')),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: _body(context),
-          ),
+          body: Padding(padding: const EdgeInsets.all(16), child: _body(context)),
         ),
       ),
     );
@@ -84,21 +81,9 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
           InkWell(child: _getCircleAvatar(), onTap: () => _tirarFoto()),
           const SizedBox(height: 5),
           const Center(
-            child: Text(
-              'Clique na imagem para adicionar uma foto (opcional)',
-              style: TextStyle(color: Colors.grey, fontSize: 12),
-            ),
+            child: Text('Clique na imagem para adicionar uma foto (opcional)', style: TextStyle(color: Colors.grey, fontSize: 12)),
           ),
-          AppText(
-            'Nome',
-            'Informe o seu nome',
-            controller: _tNome,
-            validator: _validateNome,
-            keyboardType: TextInputType.text,
-            action: TextInputAction.next,
-            autoFocus: true,
-            nextFocus: _focusSenha,
-          ),
+          AppText('Nome', 'Informe o seu nome', controller: _tNome, validator: _validateNome, keyboardType: TextInputType.text, action: TextInputAction.next, autoFocus: true, nextFocus: _focusSenha),
           const SizedBox(height: 10),
           AppText(
             'E-mail',
@@ -111,26 +96,13 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             nextFocus: _focusEmail,
           ),
           const SizedBox(height: 10),
-          AppText(
-            'Senha',
-            'Digite a senha',
-            controller: _tSenha,
-            password: true,
-            validator: _validateSenha,
-            keyboardType: TextInputType.number,
-            action: TextInputAction.done,
-            focusNode: _focusEmail,
-          ),
+          AppText('Senha', 'Digite a senha', controller: _tSenha, password: true, validator: _validateSenha, keyboardType: TextInputType.number, action: TextInputAction.done, focusNode: _focusEmail),
           const SizedBox(height: 10),
           StreamBuilder<bool>(
             stream: _bloc.stream,
             initialData: false,
             builder: (context, snapshot) {
-              return AppButton(
-                'Cadastrar',
-                onPressed: () => _onClickCadastrar(context),
-                showProgress: snapshot.data ?? true,
-              );
+              return AppButton('Cadastrar', onPressed: () => _onClickCadastrar(context), showProgress: snapshot.data ?? true);
             },
           ),
           //          AppButton(
@@ -143,10 +115,7 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
             // child: RaisedButton(
             //   color: Colors.white,
             child: TextButton(
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(color: Colors.blue, fontSize: 22),
-              ),
+              child: const Text('Cancelar', style: TextStyle(color: Colors.blue, fontSize: 22)),
               onPressed: () {
                 _onClickVoltar(context);
               },
@@ -189,19 +158,14 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
   _onClickCadastrar(BuildContext context) async {
     var navigator = Navigator.of(context);
     var image = _image;
-    if (!(_formKey.currentState?.validate() ?? false) || image == null) {
-      return;
-    }
+    // if (_formKey.currentState?.validate() ?? false) {
+    //   return;
+    // }
     String nome = _tNome.text.trim();
     String email = _tEmail.text.trim();
     String senha = _tSenha.text.trim();
     Usuario usuario = Usuario(nome: nome, email: email, senha: senha);
-    final response = await _bloc.inserir(
-      context,
-      usuario,
-      providerApp,
-      file: image,
-    );
+    final response = await _bloc.inserir(context, usuario, providerApp, file: image);
     if (response.ok ?? false) {
       push(navigator, const HomePage(), replace: true);
     } else if (context.mounted) {
@@ -230,20 +194,14 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
               height: 100,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: FileImage(image),
-                ),
+                image: DecorationImage(fit: BoxFit.fill, image: FileImage(image)),
               ),
             ),
           ],
         ),
       );
     } else {
-      return const CircleAvatar(
-        radius: 60,
-        backgroundImage: AssetImage('assets/imagens/usuario.png'),
-      );
+      return const CircleAvatar(radius: 60, backgroundImage: AssetImage('assets/imagens/usuario.png'));
     }
   }
 }
