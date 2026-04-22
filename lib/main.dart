@@ -1,5 +1,7 @@
+import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -14,11 +16,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Executa a inicialização do Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FlutterError.onError = onFlutterError;
+  PlatformDispatcher.instance.onError = onPlatformDispatcherError;
   // Chama o primeiro widget da árvore
   runApp(const App());
+}
+
+bool onPlatformDispatcherError(Object error, StackTrace stack) {
+  FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+  return true;
+}
+
+void onFlutterError(FlutterErrorDetails errorDetails) {
+  FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
 }
 
 /// App que representa a raiz da navegação dos widgets
@@ -34,9 +46,7 @@ class App extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ProviderApp()),
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => ProviderApp())],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Scrum Poker',
