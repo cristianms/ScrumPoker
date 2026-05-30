@@ -94,20 +94,23 @@ class FirebaseService {
   /// Método responsável pelo login via GoogleSignIn
   Future<ApiResponse> loginGoogle(BuildContext context, ProviderApp providerApp) async {
     try {
-      // Login com o Google - Abre janela para login no Google
-      final GoogleSignInAccount googleSignInAccount = (await _googleSignIn.authenticate(scopeHint: ['email']));
-      // Tendo o googleSignInAccount completamos a autenticação
-      final GoogleSignInAuthentication googleAuth = googleSignInAccount.authentication;
-      // Credenciais para o Firebase
-      final AuthCredential authCredential = GoogleAuthProvider.credential(accessToken: googleAuth.idToken, idToken: googleAuth.idToken);
-      // Login no Firebase
-      UserCredential authResult = await _auth.signInWithCredential(authCredential);
-      // Obtém objeto usuário do banco de dados
-      Usuario usuario = await getUsuarioCollectionByHash(authResult.user!.uid);
-      // Notifica ouvintes
-      providerApp.usuario = usuario;
-      // Resposta genérica
-      return ApiResponse.ok();
+      await GoogleSignIn.instance.initialize();
+      try {
+        final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
+        final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+        final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+        UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+        // Obtém objeto usuário do banco de dados
+        Usuario usuario = await getUsuarioCollectionByHash(authResult.user!.uid);
+        // Notifica ouvintes
+        providerApp.usuario = usuario;
+        // Resposta genérica
+        return ApiResponse.ok();
+      } on PlatformException catch (e) {
+        throw Exception('Erro ao autenticar com o Google: ${e.message}');
+      } on Exception catch (e) {
+        throw Exception('Erro inesperado ao autenticar com o Google: ${e.toString()}');
+      }
     } catch (error) {
       return ApiResponse.error(msg: 'Não foi possível fazer o login\n${error.toString()}');
     }
