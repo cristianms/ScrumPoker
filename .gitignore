@@ -60,3 +60,36 @@ anotacoes.txt
 **/linux/
 **/windows/
 **/ios/
+
+# Plataforma
+/windows/
+/windows/flutter/generated_plugin_registrant.cc
+/windows/flutter/generated_plugin_registrant.h
+/windows/flutter/generated_plugins.cmake
+/linux/
+
+# Web related
+lib/generated_plugin_registrant.dart
+
+# macOS
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral/flutter_export_environment.sh
+
+# Ignorar arquivos temporários criados pelo CMake e build nativo no app
+android/app/.cxx/
+android/app/build/
+android/app/CMakeFiles/
+android/app/cmake-build-debug/
+android/app/cmake-build-release/
+android/app/CMakeCache.txt
+android/app/cmake_install.cmake
+android/app/build.ninja
+android/app/rules.ninja
+android/app/gradle.properties~
+android/app/gradlew*
+android/app/local.properties
+android/app/externalNativeBuild/
+android/app/*.json
+android/app/*.txt
+
+ios/Flutter/ephemeral
