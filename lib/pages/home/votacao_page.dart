@@ -310,7 +310,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.black, width: 0.1),
-                            color: Colors.lightGreen,
+                            color: votacao.nota != null ? Colors.lightGreen : Colors.redAccent,
                           ),
                           child: Center(child: _nota(votacao, salaStream)),
                         ),
@@ -342,7 +342,7 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
               },
             ),
             TextButton(
-              child: const Text('Removê-lo'),
+              child: const Text('Remover da sala'),
               onPressed: () {
                 FirebaseService().excluirVotacao(widget.snapshotSala.id, usuario.hash!);
                 navigator.pop();
@@ -356,12 +356,8 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Sair da votação
   Future<void> _sairVotacao(BuildContext context, String hashSala, String hashUsuario) async {
-    // Vincula usuário a sala através da collection de votações
+    // Remove participante da sala
     await FirebaseService().excluirVotacao(hashSala, hashUsuario);
-    // Volta a tela anterior
-    if (mounted) {
-      navigator.pop();
-    }
   }
 
   String _cortarNome(String s) {
@@ -405,11 +401,14 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
 
   /// Text da nota
   Widget _nota(Votacao votacao, Sala salaStream) {
+    if (votacao.nota == null) {
+      return const Text('', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
+    }
     if (salaStream.votacaoConcluida == true) {
-      return Text(votacao.nota?.toString() ?? '', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
+      return Text(votacao.nota.toString(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
     }
     if (votacao.hashUsuario == usuario.hash) {
-      return Text(votacao.nota?.toString() ?? '', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
+      return Text(votacao.nota.toString(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold));
     }
     return const Icon(Icons.done);
   }
