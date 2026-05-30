@@ -55,3 +55,8 @@ anotacoes.txt
 
 # FVM Version Cache
 .fvm/
+
+# Ignorar arquivos gerados para Linux, Windows e iOS
+**/linux/
+**/windows/
+**/ios/
