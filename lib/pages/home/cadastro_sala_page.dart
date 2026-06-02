@@ -62,9 +62,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
       _tDescricao.text = sala.descricao ?? '';
     }
 
-    var tituloAppBar = widget.snapshotSala != null
-        ? 'Sala: ${sala.descricao}'
-        : 'Nova sala';
+    var tituloAppBar = widget.snapshotSala != null ? 'Sala: ${sala.descricao}' : 'Nova sala';
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -109,14 +107,7 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
       key: _formKey,
       child: ListView(
         children: <Widget>[
-          AppText(
-            'Sala',
-            'Informe o nome da sala',
-            controller: _tDescricao,
-            validator: _validateDescricao,
-            keyboardType: TextInputType.text,
-            action: TextInputAction.next,
-          ),
+          AppText('Sala', 'Informe o nome da sala', controller: _tDescricao, validator: _validateDescricao, keyboardType: TextInputType.text, action: TextInputAction.next),
           // SizedBox(height: 10),
           // StreamBuilder<bool>(
           //   stream: _bloc.stream,
@@ -176,16 +167,10 @@ class _CadastroSalaPageState extends State<CadastroSalaPage> {
       // O usuário criador é automaticamente adicionado a lista de participantes
       sala.hashsParticipantes = [appModel.usuario!.hash!];
     }
-    final response = await _bloc.cadastrar(
-      context,
-      sala,
-      widget.snapshotSala?.id ?? '',
-    );
+    final response = await _bloc.cadastrar(context, sala, widget.snapshotSala?.id);
     if (response.ok ?? false) {
       navigator.pop();
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Dados cadastrados!')),
-      );
+      messenger.showSnackBar(const SnackBar(content: Text('Dados cadastrados!')));
     }
   }
 }

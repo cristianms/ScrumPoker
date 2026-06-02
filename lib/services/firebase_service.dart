@@ -189,9 +189,14 @@ class FirebaseService {
   /// Método resopnsável por persistir a sala
   ///
   /// Se a [hash] for null irá inserir uma nova, se não irá editar
-  cadastrarSala(BuildContext context, Sala sala, String hash) async {
+  cadastrarSala(BuildContext context, Sala sala, String? hash) async {
     try {
-      await salasStream.doc(hash).update(sala.toMap());
+      if (hash != null) {
+        await salasStream.doc(hash).update(sala.toMap());
+      } else {
+        await salasStream.doc().set(sala.toMap());
+      }
+
       // Resposta genérica
       return ApiResponse.ok(msg: 'Sala alterada com sucesso');
     } catch (error) {

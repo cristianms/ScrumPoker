@@ -300,7 +300,11 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
                   child: Stack(
                     fit: StackFit.expand,
                     children: <Widget>[
-                      CircleAvatar(backgroundImage: NetworkImage(usuario.urlFoto ?? ''), backgroundColor: Colors.transparent),
+                      if (usuario.urlFoto != null && usuario.urlFoto!.isNotEmpty) ...[
+                        CircleAvatar(backgroundImage: NetworkImage(usuario.urlFoto!), backgroundColor: Colors.transparent),
+                      ] else ...[
+                        const CircleAvatar(backgroundImage: AssetImage('assets/imagens/usuario.png'), backgroundColor: Colors.transparent),
+                      ],
                       Positioned(
                         bottom: 0,
                         right: 0,
@@ -373,7 +377,18 @@ class _VotacaoPageState extends State<VotacaoPage> with WidgetsBindingObserver {
       spacing: 8,
       runSpacing: 8,
       alignment: WrapAlignment.center,
-      children: [_circularButton(0), _circularButton(1), _circularButton(2), _circularButton(3), _circularButton(5), _circularButton(8), _circularButton(13), _circularButton(21), _circularButton(34)],
+      children: [
+        _circularButton(0),
+        _circularButton(1),
+        _circularButton(2),
+        _circularButton(3),
+        _circularButton(5),
+        _circularButton(8),
+        _circularButton(13),
+        _circularButton(21),
+        _circularButton(34),
+        _circularButton(55),
+      ],
     );
   }
 

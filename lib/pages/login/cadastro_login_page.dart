@@ -201,7 +201,27 @@ class _CadastroLoginPageState extends State<CadastroLoginPage> {
         ),
       );
     } else {
-      return const CircleAvatar(radius: 60, backgroundImage: AssetImage('assets/imagens/usuario.png'));
+      return Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const CircleAvatar(radius: 60, backgroundImage: AssetImage('assets/imagens/usuario.png')),
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black.withValues(alpha: 0.5)),
+            ),
+            const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.add_a_photo, color: Colors.white, size: 32),
+                SizedBox(height: 4),
+                Text('Adicionar foto', style: TextStyle(color: Colors.white, fontSize: 11)),
+              ],
+            ),
+          ],
+        ),
+      );
     }
   }
 }

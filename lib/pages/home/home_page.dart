@@ -20,8 +20,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin<HomePage> {
   /// Página selecionada no menu lateral
   late int selectedIndex;
   late ScaffoldMessengerState messenger;
@@ -96,10 +95,7 @@ class _HomePageState extends State<HomePage>
         right: true,
         top: true,
         bottom: true,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: arrayPages[selectedIndex],
-        ),
+        child: Padding(padding: const EdgeInsets.all(16.0), child: arrayPages[selectedIndex]),
       ),
       drawer: SafeArea(
         child: Drawer(
@@ -128,11 +124,7 @@ class _HomePageState extends State<HomePage>
                 },
               ),
               const Divider(),
-              ListTile(
-                leading: const Icon(Icons.exit_to_app),
-                title: const Text('Logout'),
-                onTap: () => _onClickLogout(context),
-              ),
+              ListTile(leading: const Icon(Icons.exit_to_app), title: const Text('Logout'), onTap: () => _onClickLogout(context)),
             ],
           ),
         ),
@@ -178,15 +170,7 @@ class _HomePageState extends State<HomePage>
           title: const Text('Utilizar convite'),
           content: SingleChildScrollView(
             child: ListBody(
-              children: <Widget>[
-                AppText(
-                  'Código de sala',
-                  'Informe o seu código',
-                  controller: _controllerCodConvite,
-                  keyboardType: TextInputType.text,
-                  action: TextInputAction.done,
-                ),
-              ],
+              children: <Widget>[AppText('Código de sala', 'Informe o seu código', controller: _controllerCodConvite, keyboardType: TextInputType.text, action: TextInputAction.done)],
             ),
           ),
           actions: <Widget>[
@@ -196,10 +180,7 @@ class _HomePageState extends State<HomePage>
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
-              child: const Text('Utilizar'),
-              onPressed: () => _validarCodigoConvite(context),
-            ),
+            TextButton(child: const Text('Utilizar'), onPressed: () => _validarCodigoConvite(context)),
           ],
         );
       },
@@ -210,23 +191,14 @@ class _HomePageState extends State<HomePage>
   void _validarCodigoConvite(BuildContext context) async {
     var codigoConvite = _controllerCodConvite.text;
     if (codigoConvite.isNotEmpty) {
-      final usuarioLogado = Provider.of<ProviderApp>(
-        context,
-        listen: false,
-      ).usuario;
-      final statusConvite = await FirebaseService().utilizarConvite(
-        context,
-        codigoConvite,
-        usuarioLogado?.hash ?? '',
-      );
+      final usuarioLogado = Provider.of<ProviderApp>(context, listen: false).usuario;
+      final statusConvite = await FirebaseService().utilizarConvite(context, codigoConvite, usuarioLogado?.hash ?? '');
       if (mounted) {
         messenger.showSnackBar(SnackBar(content: Text(statusConvite.mensagem)));
         navigator.pop();
       }
     } else {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Convite inválido!')),
-      );
+      messenger.showSnackBar(const SnackBar(content: Text('Convite inválido!')));
     }
   }
 
@@ -236,8 +208,7 @@ class _HomePageState extends State<HomePage>
       accountName: Text(usuario.nome ?? ''),
       accountEmail: Text(usuario.email ?? ''),
       currentAccountPicture: CircleAvatar(
-        // backgroundImage: NetworkImage(usuario.photoUrl),
-        backgroundImage: CachedNetworkImageProvider(usuario.urlFoto ?? ''),
+        backgroundImage: usuario.urlFoto != null && usuario.urlFoto!.isNotEmpty ? CachedNetworkImageProvider(usuario.urlFoto!) : const AssetImage('assets/imagens/usuario.png') as ImageProvider,
       ),
     );
   }

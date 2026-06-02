@@ -7,17 +7,9 @@ import 'package:scrumpoker/utils/api_response.dart';
 import 'package:scrumpoker/utils/simple_bloc.dart';
 
 class CadastroSalaBloc extends SimpleBloc<bool> {
-  Future<ApiResponse> cadastrar(
-    BuildContext context,
-    Sala sala,
-    String hash,
-  ) async {
+  Future<ApiResponse> cadastrar(BuildContext context, Sala sala, String? hash) async {
     add(true);
-    ApiResponse response = await FirebaseService().cadastrarSala(
-      context,
-      sala,
-      hash,
-    );
+    ApiResponse response = await FirebaseService().cadastrarSala(context, sala, hash);
     add(false);
     return response;
   }
